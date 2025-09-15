@@ -2,3 +2,11 @@ spring.datasource.url=DATABASE_URL
 spring.datasource.username=USERNAME
 spring.datasource.password=PASSWORD
 spring.jpa.hibernate.ddl-auto=update
+
+# Email Settings (Gmail SMTP)
+mail.smtp.host=smtp.gmail.com
+mail.smtp.port=587
+mail.smtp.auth=true
+mail.smtp.starttls.enable=true
+mail.username=YOUR_GMAIL_ADDRESS@gmail.com
+mail.password=YOUR_GMAIL_APP_PASSWORD

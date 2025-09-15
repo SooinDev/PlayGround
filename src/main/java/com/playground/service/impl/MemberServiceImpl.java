@@ -6,8 +6,13 @@ import com.playground.mapper.MemberMapper;
 import com.playground.service.MemberService;
 import com.playground.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.mail.internet.MimeMessage;
+import java.util.UUID;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -17,6 +22,9 @@ public class MemberServiceImpl implements MemberService {
 
   @Autowired
   PasswordEncoder passwordEncoder;
+
+  @Autowired
+  JavaMailSender mailSender;
 
   @Override
   public void register(MemberVO memberVO) throws EmailDuplicateException, NicknameDuplicateException {
@@ -55,5 +63,50 @@ public class MemberServiceImpl implements MemberService {
 
     // 이메일이 없거나 비밀번호가 틀린 경우, null 반환
     return null;
+  }
+
+  @Override
+  public void forgotPassword(String email, String encodedPassword) {
+    MemberVO dbMember = memberMapper.selectMemberByEmail(email);
+
+    if (dbMember != null) {
+      memberMapper.updatePassword(email, encodedPassword);
+    }
+  }
+
+  /**
+   * 임시 비밀번호 발급
+   * @param email
+   * @return
+   */
+  @Override
+  public boolean issueTemporaryPassword(String email) {
+    MemberVO member = memberMapper.selectMemberByEmail(email);
+
+    if (member != null) {
+      String tempPassword = UUID.randomUUID().toString().substring(0, 8);
+      String encodedPassword = passwordEncoder.encode(tempPassword);
+      memberMapper.updatePassword(email, encodedPassword);
+
+      // 이메일 발송
+      try {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+        helper.setTo(email);
+        helper.setSubject("[PlayGround] 임시 비밀번호 안내");
+        // HTML 형식으로 메일 내용 작성
+        String htmlContent = "<h3>임시 비밀번호 발급</h3>"
+                + "<p>회원님의 임시 비밀번호는 <strong>" + tempPassword + "</strong> 입니다.</p>"
+                + "<p>로그인 후 즉시 비밀번호를 변경해주세요.</p>";
+        helper.setText(htmlContent, true);
+
+        mailSender.send(mimeMessage);
+        return true; // 이메일 발송 성공
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false; // 이메일 발송 실패
+      }
+    }
+    return false; // 회원이 존재하지 않음
   }
 }

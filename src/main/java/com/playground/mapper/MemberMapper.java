@@ -1,6 +1,7 @@
 package com.playground.mapper;
 
 import com.playground.vo.MemberVO;
+import org.apache.ibatis.annotations.Param;
 
 public interface MemberMapper {
 
@@ -30,4 +31,11 @@ public interface MemberMapper {
    * @return
    */
   MemberVO selectMemberByEmail(String email);
+
+  /**
+   * 비밀번호 찾기
+   * @param email
+   * @param encodedPassword
+   */
+  void updatePassword(@Param("email") String email, @Param("password") String encodedPassword);
 }

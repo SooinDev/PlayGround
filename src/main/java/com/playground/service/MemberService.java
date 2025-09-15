@@ -9,4 +9,8 @@ public interface MemberService {
   void register(MemberVO memberVO) throws EmailDuplicateException, NicknameDuplicateException;
 
   MemberVO login(MemberVO memberVO);
+
+  void forgotPassword(String email, String encodedPassword);
+
+  boolean issueTemporaryPassword(String email);
 }

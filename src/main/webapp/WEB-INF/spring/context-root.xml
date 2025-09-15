@@ -21,6 +21,19 @@
     <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
   </bean>
 
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="${mail.smtp.host}" />
+    <property name="port" value="${mail.smtp.port}" />
+    <property name="username" value="${mail.username}" />
+    <property name="password" value="${mail.password}" />
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.smtp.auth">${mail.smtp.auth}</prop>
+        <prop key="mail.smtp.starttls.enable">${mail.smtp.starttls.enable}</prop>
+      </props>
+    </property>
+  </bean>
+
   <mybatis-spring:scan base-package="com.playground.mapper"/>
   <context:component-scan base-package="com.playground.service"/>
   <context:component-scan base-package="com.playground.service.impl"/>
