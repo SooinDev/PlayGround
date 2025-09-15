@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // 폼 유효성 검사
   initFormValidation();
 
+  // 중복 확인 기능
+  initDuplicateCheck();
+
   // 소셜 회원가입 버튼
   initSocialRegister();
 
@@ -456,7 +459,6 @@ setTimeout(() => {
   submitBtn.disabled = false;
   submitBtn.style.opacity = '1';
 }, 3000);
-
 
 // 이벤트 리스너 등록
 passwordInput.addEventListener('input', validatePasswordStrength);

@@ -91,30 +91,46 @@
         <div class="form-row">
           <div class="form-group">
             <label for="email">이메일 주소 *</label>
-            <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="your@email.com"
-                    value="${param.email}"
-                    required
-                    autocomplete="email"
-            >
+            <div class="input-with-button">
+              <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      placeholder="your@email.com"
+                      value="${param.email}"
+                      required
+                      autocomplete="email"
+              >
+              <button type="button" class="check-btn" id="emailCheckBtn">
+                <span class="check-text">중복확인</span>
+                <span class="check-loading">확인중...</span>
+                <span class="check-success">사용가능</span>
+              </button>
+            </div>
+            <div class="validation-message" id="emailValidation"></div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="nickname">닉네임 *</label>
-            <input
-                    type="text"
-                    id="nickname"
-                    name="nickname"
-                    placeholder="다른 사용자에게 표시될 이름"
-                    value="${param.nickname}"
-                    required
-                    autocomplete="username"
-            >
+            <div class="input-with-button">
+              <input
+                      type="text"
+                      id="nickname"
+                      name="nickname"
+                      placeholder="다른 사용자에게 표시될 이름"
+                      value="${param.nickname}"
+                      required
+                      autocomplete="username"
+              >
+              <button type="button" class="check-btn" id="nicknameCheckBtn">
+                <span class="check-text">중복확인</span>
+                <span class="check-loading">확인중...</span>
+                <span class="check-success">사용가능</span>
+              </button>
+            </div>
+            <div class="validation-message" id="nicknameValidation"></div>
           </div>
         </div>
 
@@ -155,6 +171,7 @@
                     required
                     autocomplete="new-password"
             >
+            <div class="validation-message" id="confirmPasswordValidation"></div>
           </div>
         </div>
 
@@ -165,10 +182,11 @@
                     type="text"
                     id="name"
                     name="name"
-                    placeholder="이름"
+                    placeholder="홍길동"
                     value="${param.name}"
                     autocomplete="name"
             >
+            <div class="validation-message" id="nameValidation"></div>
           </div>
           <div class="form-group">
             <label for="phone">연락처</label>
@@ -180,6 +198,7 @@
                     value="${param.phone}"
                     autocomplete="tel"
             >
+            <div class="validation-message" id="phoneValidation"></div>
           </div>
         </div>
 
@@ -194,6 +213,7 @@
                     value="${param.address}"
                     autocomplete="address-line1"
             >
+            <div class="validation-message" id="addressValidation"></div>
           </div>
         </div>
 

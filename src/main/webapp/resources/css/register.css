@@ -345,7 +345,7 @@ body {
   color: #16a34a;
 }
 
-/* 폼 스타일 */
+/* 폼 스타일 - 모든 입력 필드 통일 */
 .register-form {
   margin-bottom: 32px;
 }
@@ -372,7 +372,142 @@ body {
   margin-bottom: 8px;
 }
 
-.form-group input {
+/* 입력 필드 + 버튼 조합 (이메일/닉네임용) */
+.input-with-button {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.input-with-button input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+.input-with-button input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+/* 중복 확인 버튼 */
+.check-btn {
+  padding: 14px 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-btn:hover {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.check-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 버튼 상태별 텍스트 */
+.check-loading,
+.check-success {
+  display: none;
+}
+
+.check-btn.loading .check-text {
+  display: none;
+}
+
+.check-btn.loading .check-loading {
+  display: inline;
+}
+
+.check-btn.success {
+  background: #dcfce7;
+  border-color: #10b981;
+  color: #059669;
+}
+
+.check-btn.success .check-text {
+  display: none;
+}
+
+.check-btn.success .check-success {
+  display: inline;
+}
+
+.check-btn.error {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+/* 유효성 검사 메시지 */
+.validation-message {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.validation-message.success {
+  color: #059669;
+}
+
+.validation-message.error {
+  color: #dc2626;
+}
+
+.validation-message.info {
+  color: #0284c7;
+}
+
+.validation-message::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.validation-message.success::before {
+  content: '✓';
+  color: #059669;
+  font-weight: bold;
+}
+
+.validation-message.error::before {
+  content: '✗';
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.validation-message.info::before {
+  content: 'ℹ';
+  color: #0284c7;
+  font-weight: bold;
+}
+
+/* 모든 일반 입력 필드 (버튼 없는 필드들) */
+.form-group input:not(.input-with-button input) {
   width: 100%;
   padding: 14px 16px;
   border: 2px solid #e5e7eb;
@@ -382,14 +517,19 @@ body {
   background: #ffffff;
 }
 
-.form-group input:focus {
+.form-group input:not(.input-with-button input):focus {
   outline: none;
   border-color: #10b981;
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
+/* 비밀번호 필드만 특별 처리 */
 .password-field {
   position: relative;
+}
+
+.password-field input {
+  padding-right: 48px;
 }
 
 .password-toggle {
