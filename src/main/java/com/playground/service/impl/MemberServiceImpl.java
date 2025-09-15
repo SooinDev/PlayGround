@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -213,5 +212,15 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public void changePassword(String email, String currentPassword, String newPassword) throws Exception {
 
+  }
+
+  @Override
+  public boolean isEmailDuplicated(String email) {
+    return memberMapper.isEmailDuplicated(email);
+  }
+
+  @Override
+  public boolean isNicknameDuplicated(String nickname) {
+    return memberMapper.isNicknameDuplicated(nickname);
   }
 }

@@ -1,165 +1,179 @@
-// GitHub 스타일 회원가입 페이지 스크립트
+// 회원가입 페이지 스크립트
 console.log("회원가입 페이지 스크립트 로드 완료.");
 
 document.addEventListener('DOMContentLoaded', function() {
-  // 폼 요소들 초기화
+  console.log("DOM 로드 완료");
+
+  // 모든 초기화 함수 호출
   initializeForm();
-
-  // 비밀번호 토글 및 강도 검사
   initPasswordFeatures();
-
-  // 폼 유효성 검사
   initFormValidation();
-
-  // 중복 확인 기능
   initDuplicateCheck();
-
-  // 소셜 회원가입 버튼
   initSocialRegister();
-
-  // 애니메이션 효과
   initAnimations();
 });
 
 // 중복 확인 기능 초기화
 function initDuplicateCheck() {
+  console.log("중복확인 기능 초기화 시작");
+
   const emailInput = document.getElementById('email');
   const nicknameInput = document.getElementById('nickname');
   const emailCheckBtn = document.getElementById('emailCheckBtn');
   const nicknameCheckBtn = document.getElementById('nicknameCheckBtn');
 
+  console.log('요소 찾기 결과:');
+  console.log('emailInput:', emailInput);
+  console.log('nicknameInput:', nicknameInput);
+  console.log('emailCheckBtn:', emailCheckBtn);
+  console.log('nicknameCheckBtn:', nicknameCheckBtn);
+
   // 이메일 중복 확인
   if (emailCheckBtn) {
-    emailCheckBtn.addEventListener('click', function() {
+    console.log("이메일 중복확인 버튼 이벤트 리스너 추가");
+    emailCheckBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log("이메일 중복확인 버튼 클릭됨");
+
       const email = emailInput.value.trim();
+      console.log("입력된 이메일:", email);
+
       if (!email) {
         showValidationMessage('이메일을 입력해주세요.', 'error', 'emailValidation');
         return;
       }
+
       if (!validateEmailFormat(email)) {
         showValidationMessage('올바른 이메일 형식을 입력해주세요.', 'error', 'emailValidation');
         return;
       }
-      checkEmailDuplicate(email);
+
+      checkEmailDuplicate(email, emailCheckBtn);
     });
+  } else {
+    console.error("이메일 중복확인 버튼을 찾을 수 없습니다");
   }
 
   // 닉네임 중복 확인
   if (nicknameCheckBtn) {
-    nicknameCheckBtn.addEventListener('click', function() {
+    console.log("닉네임 중복확인 버튼 이벤트 리스너 추가");
+    nicknameCheckBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log("닉네임 중복확인 버튼 클릭됨");
+
       const nickname = nicknameInput.value.trim();
+      console.log("입력된 닉네임:", nickname);
+
       if (!nickname) {
         showValidationMessage('닉네임을 입력해주세요.', 'error', 'nicknameValidation');
         return;
       }
+
       if (!validateNicknameFormat(nickname)) {
         showValidationMessage('닉네임은 2-20자의 영문, 한글, 숫자, 언더스코어만 사용 가능합니다.', 'error', 'nicknameValidation');
         return;
       }
-      checkNicknameDuplicate(nickname);
+
+      checkNicknameDuplicate(nickname, nicknameCheckBtn);
+    });
+  } else {
+    console.error("닉네임 중복확인 버튼을 찾을 수 없습니다");
+  }
+
+  // 입력값 변경 시 버튼 상태 초기화
+  if (emailInput) {
+    emailInput.addEventListener('input', function() {
+      resetButton(emailCheckBtn);
+      hideValidationMessage('emailValidation');
     });
   }
 
-  // 입력값 변경 시 중복확인 상태 초기화
-  emailInput.addEventListener('input', function() {
-    resetCheckButton(emailCheckBtn, 'emailValidation');
-  });
-
-  nicknameInput.addEventListener('input', function() {
-    resetCheckButton(nicknameCheckBtn, 'nicknameValidation');
-  });
+  if (nicknameInput) {
+    nicknameInput.addEventListener('input', function() {
+      resetButton(nicknameCheckBtn);
+      hideValidationMessage('nicknameValidation');
+    });
+  }
 }
 
-// 이메일 중복 확인 API 호출
-function checkEmailDuplicate(email) {
-  const checkBtn = document.getElementById('emailCheckBtn');
-  setButtonLoading(checkBtn, true);
+// 이메일 중복확인 - 실제 서버 API 호출
+function checkEmailDuplicate(email, button) {
+  console.log("이메일 중복확인 시작:", email);
 
-  showValidationMessage('이메일 중복 확인 중...', 'loading', 'emailValidation');
+  setButtonLoading(button, true);
+  showValidationMessage('이메일 중복 확인 중...', 'info', 'emailValidation');
 
-  // 실제 API 호출 (현재는 시뮬레이션)
+  // 서버 API 호출
   fetch('/member/check-email', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: JSON.stringify({ email: email })
+    body: 'email=' + encodeURIComponent(email)
   })
       .then(response => response.json())
       .then(data => {
-        setButtonLoading(checkBtn, false);
+        setButtonLoading(button, false);
 
-        if (data.available) {
-          setButtonSuccess(checkBtn);
-          showValidationMessage('사용 가능한 이메일입니다.', 'success', 'emailValidation');
+        if (data.success) {
+          setButtonSuccess(button);
+          showValidationMessage(data.message, 'success', 'emailValidation');
+          console.log("이메일 사용 가능:", email);
         } else {
-          setButtonError(checkBtn);
-          showValidationMessage('이미 사용중인 이메일입니다.', 'error', 'emailValidation');
+          setButtonError(button);
+          showValidationMessage(data.message, 'error', 'emailValidation');
+          console.log("이메일 사용 불가:", email);
         }
       })
       .catch(error => {
-        setButtonLoading(checkBtn, false);
-        console.error('이메일 중복 확인 오류:', error);
-
-        // 임시: 랜덤하게 성공/실패 시뮬레이션
-        const isAvailable = Math.random() > 0.3; // 70% 확률로 사용 가능
-
-        if (isAvailable) {
-          setButtonSuccess(checkBtn);
-          showValidationMessage('사용 가능한 이메일입니다.', 'success', 'emailValidation');
-        } else {
-          setButtonError(checkBtn);
-          showValidationMessage('이미 사용중인 이메일입니다.', 'error', 'emailValidation');
-        }
+        console.error('이메일 중복확인 에러:', error);
+        setButtonLoading(button, false);
+        setButtonError(button);
+        showValidationMessage('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error', 'emailValidation');
       });
 }
 
-// 닉네임 중복 확인 API 호출
-function checkNicknameDuplicate(nickname) {
-  const checkBtn = document.getElementById('nicknameCheckBtn');
-  setButtonLoading(checkBtn, true);
+// 닉네임 중복확인 - 실제 서버 API 호출
+function checkNicknameDuplicate(nickname, button) {
+  console.log("닉네임 중복확인 시작:", nickname);
 
-  showValidationMessage('닉네임 중복 확인 중...', 'loading', 'nicknameValidation');
+  setButtonLoading(button, true);
+  showValidationMessage('닉네임 중복 확인 중...', 'info', 'nicknameValidation');
 
-  // 실제 API 호출 (현재는 시뮬레이션)
+  // 서버 API 호출
   fetch('/member/check-nickname', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: JSON.stringify({ nickname: nickname })
+    body: 'nickname=' + encodeURIComponent(nickname)
   })
       .then(response => response.json())
       .then(data => {
-        setButtonLoading(checkBtn, false);
+        setButtonLoading(button, false);
 
-        if (data.available) {
-          setButtonSuccess(checkBtn);
-          showValidationMessage('사용 가능한 닉네임입니다.', 'success', 'nicknameValidation');
+        if (data.success) {
+          setButtonSuccess(button);
+          showValidationMessage(data.message, 'success', 'nicknameValidation');
+          console.log("닉네임 사용 가능:", nickname);
         } else {
-          setButtonError(checkBtn);
-          showValidationMessage('이미 사용중인 닉네임입니다.', 'error', 'nicknameValidation');
+          setButtonError(button);
+          showValidationMessage(data.message, 'error', 'nicknameValidation');
+          console.log("닉네임 사용 불가:", nickname);
         }
       })
       .catch(error => {
-        setButtonLoading(checkBtn, false);
-        console.error('닉네임 중복 확인 오류:', error);
-
-        // 임시: 랜덤하게 성공/실패 시뮬레이션
-        const isAvailable = Math.random() > 0.4; // 60% 확률로 사용 가능
-
-        if (isAvailable) {
-          setButtonSuccess(checkBtn);
-          showValidationMessage('사용 가능한 닉네임입니다.', 'success', 'nicknameValidation');
-        } else {
-          setButtonError(checkBtn);
-          showValidationMessage('이미 사용중인 닉네임입니다.', 'error', 'nicknameValidation');
-        }
+        console.error('닉네임 중복확인 에러:', error);
+        setButtonLoading(button, false);
+        setButtonError(button);
+        showValidationMessage('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error', 'nicknameValidation');
       });
 }
 
 // 버튼 상태 관리 함수들
 function setButtonLoading(button, isLoading) {
+  if (!button) return;
+
   if (isLoading) {
     button.classList.add('loading');
     button.disabled = true;
@@ -170,26 +184,30 @@ function setButtonLoading(button, isLoading) {
 }
 
 function setButtonSuccess(button) {
+  if (!button) return;
+
   button.classList.remove('loading', 'error');
   button.classList.add('success');
   button.disabled = true;
 }
 
 function setButtonError(button) {
+  if (!button) return;
+
   button.classList.remove('loading', 'success');
   button.classList.add('error');
   button.disabled = false;
 }
 
-function resetCheckButton(button, validationId) {
-  if (button) {
-    button.classList.remove('loading', 'success', 'error');
-    button.disabled = false;
-  }
-  hideValidationMessage(validationId);
+function resetButton(button) {
+  if (!button) return;
+
+  button.classList.remove('loading', 'success', 'error');
+  button.disabled = false;
+  console.log("버튼 상태 초기화됨");
 }
 
-// 유효성 검사 메시지 표시/숨기기
+// 유효성 검사 메시지 함수들
 function showValidationMessage(message, type, elementId) {
   const element = document.getElementById(elementId);
   if (element) {
@@ -220,31 +238,39 @@ function validateNicknameFormat(nickname) {
 
 // 폼 초기화
 function initializeForm() {
+  console.log("폼 초기화");
+
   const form = document.getElementById('registerForm');
   const passwordInput = document.getElementById('password');
   const confirmPasswordInput = document.getElementById('confirmPassword');
 
   // 비밀번호 확인 실시간 검사
-  confirmPasswordInput.addEventListener('input', function() {
-    validatePasswordMatch();
-  });
+  if (confirmPasswordInput) {
+    confirmPasswordInput.addEventListener('input', function() {
+      validatePasswordMatch();
+    });
+  }
 
   // 폼 제출 이벤트
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    handleFormSubmit();
-  });
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      handleFormSubmit();
+    });
+  }
 }
 
 // 비밀번호 관련 기능 초기화
 function initPasswordFeatures() {
+  console.log("비밀번호 기능 초기화");
+
   const passwordInput = document.getElementById('password');
   const toggleButton = document.querySelector('.password-toggle');
   const toggleIcon = document.querySelector('.toggle-icon');
   const strengthContainer = document.querySelector('.password-strength');
 
   // 비밀번호 보기/숨기기 토글
-  if (toggleButton) {
+  if (toggleButton && passwordInput && toggleIcon) {
     toggleButton.addEventListener('click', function() {
       const isPassword = passwordInput.type === 'password';
 
@@ -258,24 +284,28 @@ function initPasswordFeatures() {
   }
 
   // 비밀번호 강도 검사
-  passwordInput.addEventListener('input', function() {
-    const password = this.value;
+  if (passwordInput && strengthContainer) {
+    passwordInput.addEventListener('input', function() {
+      const password = this.value;
 
-    if (password.length > 0) {
-      strengthContainer.classList.add('visible');
-      updatePasswordStrength(password);
-    } else {
-      strengthContainer.classList.remove('visible');
-    }
+      if (password.length > 0) {
+        strengthContainer.classList.add('visible');
+        updatePasswordStrength(password);
+      } else {
+        strengthContainer.classList.remove('visible');
+      }
 
-    validatePasswordStrength();
-  });
+      validatePasswordStrength();
+    });
+  }
 }
 
 // 비밀번호 강도 업데이트
 function updatePasswordStrength(password) {
   const strengthFill = document.querySelector('.strength-fill');
   const strengthText = document.querySelector('.strength-text');
+
+  if (!strengthFill || !strengthText) return;
 
   let score = 0;
   let feedback = '';
@@ -313,6 +343,8 @@ function updatePasswordStrength(password) {
 // 비밀번호 강도 유효성 검사
 function validatePasswordStrength() {
   const passwordInput = document.getElementById('password');
+  if (!passwordInput) return false;
+
   const password = passwordInput.value;
 
   if (password.length < 8) {
@@ -337,6 +369,8 @@ function validatePasswordMatch() {
   const passwordInput = document.getElementById('password');
   const confirmPasswordInput = document.getElementById('confirmPassword');
 
+  if (!passwordInput || !confirmPasswordInput) return false;
+
   const password = passwordInput.value;
   const confirmPassword = confirmPasswordInput.value;
 
@@ -360,6 +394,8 @@ function validatePasswordMatch() {
 
 // 폼 유효성 검사 초기화
 function initFormValidation() {
+  console.log("폼 유효성 검사 초기화");
+
   const inputs = document.querySelectorAll('input');
 
   inputs.forEach(input => {
@@ -374,14 +410,12 @@ function initFormValidation() {
       this.style.boxShadow = 'none';
 
       if (this.type === 'email') {
-        // 이메일 형식만 검사 (중복확인은 버튼으로)
         if (this.value && !validateEmailFormat(this.value)) {
           this.style.borderColor = '#ef4444';
         } else {
           this.style.borderColor = '#e5e7eb';
         }
       } else if (this.name === 'nickname') {
-        // 닉네임 형식만 검사 (중복확인은 버튼으로)
         if (this.value && !validateNicknameFormat(this.value)) {
           this.style.borderColor = '#ef4444';
         } else {
@@ -400,6 +434,8 @@ function initFormValidation() {
 
 // 폼 제출 처리
 function handleFormSubmit() {
+  console.log("폼 제출 처리 시작");
+
   const form = document.getElementById('registerForm');
   const registerBtn = document.querySelector('.register-btn');
   const termsCheckbox = document.querySelector('input[name="agreeTerms"]');
@@ -408,12 +444,12 @@ function handleFormSubmit() {
   const emailCheckBtn = document.getElementById('emailCheckBtn');
   const nicknameCheckBtn = document.getElementById('nicknameCheckBtn');
 
-  if (!emailCheckBtn.classList.contains('success')) {
+  if (!emailCheckBtn || !emailCheckBtn.classList.contains('success')) {
     showGlobalMessage('이메일 중복확인을 완료해주세요.', 'error');
     return;
   }
 
-  if (!nicknameCheckBtn.classList.contains('success')) {
+  if (!nicknameCheckBtn || !nicknameCheckBtn.classList.contains('success')) {
     showGlobalMessage('닉네임 중복확인을 완료해주세요.', 'error');
     return;
   }
@@ -423,9 +459,9 @@ function handleFormSubmit() {
   const isPasswordMatchValid = validatePasswordMatch();
 
   // 약관 동의 확인
-  if (!termsCheckbox.checked) {
+  if (!termsCheckbox || !termsCheckbox.checked) {
     showGlobalMessage('이용약관에 동의해주세요.', 'error');
-    termsCheckbox.focus();
+    if (termsCheckbox) termsCheckbox.focus();
     return;
   }
 
@@ -447,7 +483,9 @@ function handleFormSubmit() {
   }
 
   // 로딩 상태 시작
-  showLoadingState(registerBtn);
+  if (registerBtn) {
+    showLoadingState(registerBtn);
+  }
 
   // 실제 폼 제출
   showGlobalMessage('계정 생성 중...', 'info');
@@ -458,6 +496,8 @@ function handleFormSubmit() {
 
 // 로딩 상태 표시
 function showLoadingState(button) {
+  if (!button) return;
+
   button.classList.add('loading');
   button.disabled = true;
   button.style.opacity = '0.8';
@@ -527,19 +567,19 @@ function showGlobalMessage(message, type) {
 
 // 소셜 회원가입 초기화
 function initSocialRegister() {
+  console.log("소셜 회원가입 초기화");
+
   const googleBtn = document.querySelector('.google-btn');
   const githubBtn = document.querySelector('.github-btn');
 
   if (googleBtn) {
     googleBtn.addEventListener('click', function() {
-      console.log('Google 회원가입 시도');
       showGlobalMessage('Google 회원가입 기능은 준비 중입니다.', 'info');
     });
   }
 
   if (githubBtn) {
     githubBtn.addEventListener('click', function() {
-      console.log('GitHub 회원가입 시도');
       showGlobalMessage('GitHub 회원가입 기능은 준비 중입니다.', 'info');
     });
   }
@@ -547,6 +587,8 @@ function initSocialRegister() {
 
 // 애니메이션 효과 초기화
 function initAnimations() {
+  console.log("애니메이션 초기화");
+
   // 페이지 로드 시 애니메이션
   const illustrationPanel = document.querySelector('.illustration-panel');
   const formPanel = document.querySelector('.form-panel');
@@ -579,25 +621,6 @@ function initAnimations() {
       }
     }, 400);
   });
-
-  // 폼 요소들 순차 애니메이션
-  animateFormElements();
-}
-
-// 폼 요소 애니메이션
-function animateFormElements() {
-  const formElements = document.querySelectorAll('.brand-header, .register-form, .divider, .social-register, .login-link');
-
-  formElements.forEach((element, index) => {
-    element.style.opacity = '0';
-    element.style.transform = 'translateY(20px)';
-    element.style.transition = 'all 0.6s ease';
-
-    setTimeout(() => {
-      element.style.opacity = '1';
-      element.style.transform = 'translateY(0)';
-    }, 600 + (index * 100));
-  });
 }
 
 // 키보드 네비게이션 지원
@@ -618,7 +641,7 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('change', function(e) {
   if (e.target.type === 'checkbox') {
     const checkmark = e.target.nextElementSibling;
-    if (e.target.checked) {
+    if (e.target.checked && checkmark) {
       checkmark.style.transform = 'scale(1.1)';
       setTimeout(() => {
         checkmark.style.transform = 'scale(1)';
@@ -627,12 +650,4 @@ document.addEventListener('change', function(e) {
   }
 });
 
-// 폼 자동완성 개선
-window.addEventListener('load', function() {
-  const inputs = document.querySelectorAll('input');
-  inputs.forEach(input => {
-    if (input.value) {
-      input.style.borderColor = '#10b981';
-    }
-  });
-});
+console.log("회원가입 스크립트 초기화 완료");

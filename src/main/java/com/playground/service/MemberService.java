@@ -60,4 +60,18 @@ public interface MemberService {
    * @throws Exception
    */
   void changePassword(String email, String currentPassword, String newPassword) throws Exception;
+
+  /**
+   * 이메일 중복 확인
+   * @param email
+   * @return
+   */
+  boolean isEmailDuplicated(String email);
+
+  /**
+   * 닉네임 중복 확인
+   * @param nickname
+   * @return
+   */
+  boolean isNicknameDuplicated(String nickname);
 }
