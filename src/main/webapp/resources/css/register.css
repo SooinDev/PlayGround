@@ -865,3 +865,110 @@ body {
 .form-group input:focus-visible {
   outline: none;
 }
+
+/* 전화번호 입력 컨테이너 스타일 */
+.phone-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.phone-input-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.country-select {
+  min-width: 160px;
+  flex-shrink: 0;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 54px;
+  box-sizing: border-box;
+}
+
+.country-select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.phone-input-container input[type="tel"] {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  background: white;
+  color: #374151;
+  transition: all 0.3s ease;
+  height: 54px;
+  box-sizing: border-box;
+}
+
+.phone-input-container input[type="tel"]:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.phone-input-container .validation-message {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 다크모드 전화번호 입력 */
+@media (prefers-color-scheme: dark) {
+  .country-select {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+
+  .country-select:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  }
+
+  .phone-input-container input[type="tel"] {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+
+  .phone-input-container input[type="tel"]:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .register-container {
+    grid-template-columns: 1fr;
+  }
+
+  .illustration-panel {
+    display: none;
+  }
+
+  .form-panel {
+    min-height: 100vh;
+  }
+}

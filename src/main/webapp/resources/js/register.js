@@ -650,4 +650,132 @@ document.addEventListener('change', function(e) {
   }
 });
 
+// 전화번호 입력 기능 추가
+document.addEventListener('DOMContentLoaded', function() {
+  const countrySelect = document.getElementById('countrySelect');
+  const phoneInput = document.getElementById('phone');
+  const phoneValidation = document.getElementById('phoneValidation');
+
+  // 전화번호 포맷팅 함수
+  function formatPhoneNumber(value, format) {
+    const digits = value.replace(/\D/g, '');
+    let formatted = '';
+    let digitIndex = 0;
+
+    for (let i = 0; i < format.length && digitIndex < digits.length; i++) {
+      if (format[i] === '0') {
+        formatted += digits[digitIndex];
+        digitIndex++;
+      } else {
+        formatted += format[i];
+      }
+    }
+
+    return formatted;
+  }
+
+  // 전화번호 유효성 검사
+  function validatePhoneNumber(phoneNumber, countryCode) {
+    const digits = phoneNumber.replace(/\D/g, '');
+
+    const patterns = {
+      'KR': /^010\d{8}$/,
+      'US': /^\d{10}$/,
+      'JP': /^\d{10,11}$/,
+      'CN': /^\d{11}$/,
+      'GB': /^\d{10,11}$/,
+      'DE': /^\d{10,12}$/,
+      'FR': /^\d{10}$/,
+      'AU': /^\d{9}$/,
+      'CA': /^\d{10}$/,
+      'IN': /^\d{10}$/
+    };
+
+    const pattern = patterns[countryCode];
+    return pattern ? pattern.test(digits) : digits.length >= 8 && digits.length <= 15;
+  }
+
+  // 전화번호 입력 처리
+  phoneInput.addEventListener('input', function(e) {
+    const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+    const format = selectedOption.dataset.format;
+    const countryCode = selectedOption.value;
+
+    const formattedValue = formatPhoneNumber(e.target.value, format);
+    e.target.value = formattedValue;
+
+    // 실시간 유효성 검사
+    const digits = formattedValue.replace(/\D/g, '');
+
+    if (digits.length === 0) {
+      phoneValidation.textContent = '';
+      phoneValidation.className = 'validation-message';
+    } else if (validatePhoneNumber(formattedValue, countryCode)) {
+      phoneValidation.textContent = '올바른 전화번호 형식입니다';
+      phoneValidation.className = 'validation-message success';
+    } else {
+      phoneValidation.textContent = `${selectedOption.textContent.split('(')[0].trim()} 형식에 맞게 입력해주세요`;
+      phoneValidation.className = 'validation-message error';
+    }
+  });
+
+  // 국가 변경 시 포맷 업데이트
+  countrySelect.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const format = selectedOption.dataset.format;
+    const countryCode = selectedOption.value;
+
+    if (phoneInput.value) {
+      const formattedValue = formatPhoneNumber(phoneInput.value, format);
+      phoneInput.value = formattedValue;
+
+      // 유효성 재검사
+      if (validatePhoneNumber(formattedValue, countryCode)) {
+        phoneValidation.textContent = '올바른 전화번호 형식입니다';
+        phoneValidation.className = 'validation-message success';
+      } else {
+        phoneValidation.textContent = `${selectedOption.textContent.split('(')[0].trim()} 형식에 맞게 입력해주세요`;
+        phoneValidation.className = 'validation-message error';
+      }
+    }
+
+    // 플레이스홀더 업데이트
+    const placeholders = {
+      'KR': '010-1234-5678',
+      'US': '(555) 123-4567',
+      'JP': '090-1234-5678',
+      'CN': '138 0013 8000',
+      'GB': '07700 900123',
+      'DE': '0151 12345678',
+      'FR': '06 12 34 56 78',
+      'AU': '0412 345 678',
+      'CA': '(604) 123-4567',
+      'IN': '98765 43210'
+    };
+
+    phoneInput.placeholder = placeholders[countryCode] || '전화번호를 입력하세요';
+  });
+
+  // 폼 제출 시 전화번호 유효성 최종 검사
+  const registerForm = document.getElementById('registerForm');
+  if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+      const phoneValue = phoneInput.value.trim();
+
+      if (phoneValue) {
+        const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+        const countryCode = selectedOption.value;
+
+        if (!validatePhoneNumber(phoneValue, countryCode)) {
+          e.preventDefault();
+          phoneValidation.textContent = '올바른 전화번호를 입력해주세요';
+          phoneValidation.className = 'validation-message error';
+          phoneInput.focus();
+          return false;
+        }
+      }
+    });
+  }
+});
+
 console.log("회원가입 스크립트 초기화 완료");
