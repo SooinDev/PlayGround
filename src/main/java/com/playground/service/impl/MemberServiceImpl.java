@@ -5,6 +5,7 @@ import com.playground.service.MemberService;
 import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,8 +14,10 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Service
@@ -195,40 +198,50 @@ public class MemberServiceImpl implements MemberService {
   }
 
   /**
-   * 개인 정보 수정
-   * @param memberVO
+   * 회원 정보 수정
+   * @param formVO
    * @return
    * @throws Exception
    */
   @Override
-  public MemberVO updateInfo(MemberVO memberVO) throws Exception {
+  public MemberVO updateInfo(MemberVO formVO) throws Exception {
 
-    MemberVO currentMember = memberMapper.selectMemberById(memberVO.getMemberId());
+    // DB에서 현재 정보를 ID를 기준으로 조회 (가장 안전)
+    MemberVO currentMember = memberMapper.selectMemberById(formVO.getMemberId());
 
-    // DB에서 회원 정보부터 조회
-    if (currentMember == null) {
-      throw new Exception("오류: 현재 회원 정보를 찾을 수 없습니다.");
-    }
-
-    // 이메일 변경 로직: DB의 현재 이메일과 폼으로 받은 이메일이 다른지 확인
-    if (!currentMember.getEmail().equals(memberVO.getEmail())) {
-      // 이메일이 변경 시, 중복 체크 후 변경
-      if (memberMapper.isEmailDuplicated(memberVO.getEmail())) {
+    if (!currentMember.getEmail().equals(formVO.getEmail())) {
+      if (memberMapper.isEmailDuplicated(formVO.getEmail())) {
         throw new Exception("이미 사용 중인 이메일입니다.");
       }
-      changeEmail(currentMember.getEmail(), memberVO.getEmail());
     }
 
-    // 닉네임 변경 로직: 7일 제한 규칙이 있는 changeNickname 메소드 호출
-    if (!currentMember.getNickname().equals(memberVO.getNickname())) {
-      changeNickname(currentMember.getEmail(), memberVO.getNickname());
+    if (!currentMember.getNickname().equals(formVO.getNickname())) {
+      LocalDateTime lastChange = currentMember.getNicknameChangedAt();
+      if (lastChange != null) {
+        Duration diff = Duration.between(lastChange, LocalDateTime.now());
+        if (diff.toDays() < 7) {
+          long daysLeft = 7 - diff.toDays();
+          throw new Exception("닉네임은 7일에 한 번만 변경할 수 있습니다. (" + daysLeft + "일 남음)");
+        }
+      }
+    }
+
+    // 이메일 업데이트 (필요한 경우)
+    if (!currentMember.getEmail().equals(formVO.getEmail())) {
+      memberMapper.updateEmail(currentMember.getEmail(), formVO.getEmail());
+    }
+
+    // 닉네임 업데이트 (필요한 경우)
+    if (!currentMember.getNickname().equals(formVO.getNickname())) {
+      // 이메일은 변경되었을 수 있으므로, 최신 이메일인 formVO.getEmail()을 사용합니다.
+      memberMapper.updateNickname(formVO.getEmail(), formVO.getNickname());
     }
 
     // 나머지 정보(이름, 연락처, 주소) 업데이트
-    memberMapper.updateInfo(memberVO);
+    memberMapper.updateInfo(formVO);
 
-    // 모든 변경이 완료된 최신 회원 정보를 반환
-    return memberMapper.selectMemberById(memberVO.getMemberId());
+    // 모든 변경이 끝난 후, 최종적으로 DB에서 최신 정보를 다시 조회하여 반환
+    return memberMapper.selectMemberById(formVO.getMemberId());
   }
 
   @Override

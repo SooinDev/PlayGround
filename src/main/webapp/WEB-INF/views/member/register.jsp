@@ -177,7 +177,7 @@
 
         <div class="form-row two-columns">
           <div class="form-group">
-            <label for="name">실명</label>
+            <label for="name">이름</label>
             <input
                     type="text"
                     id="name"

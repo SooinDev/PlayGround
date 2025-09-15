@@ -83,7 +83,7 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="name">실명</label>
+              <label for="name">이름</label>
               <input type="text" id="name" name="name" value="${sessionScope.loginMember.name}" placeholder="홍길동">
             </div>
 
