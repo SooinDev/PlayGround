@@ -14,6 +14,8 @@
     <property name="password" value="${spring.datasource.password}"/>
   </bean>
 
+  <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
     <property name="dataSource" ref="dataSource"/>
     <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
