@@ -89,7 +89,24 @@
 
             <div class="form-group">
               <label for="phone">연락처</label>
-              <input type="tel" id="phone" name="phone" value="${sessionScope.loginMember.phone}" placeholder="010-1234-5678">
+              <div class="phone-input-container">
+                <div class="phone-input-wrapper">
+                  <select class="country-select" id="countrySelect">
+                    <option value="KR" data-code="+82" data-format="000-0000-0000" selected>🇰🇷 한국 (+82)</option>
+                    <option value="US" data-code="+1" data-format="(000) 000-0000">🇺🇸 미국 (+1)</option>
+                    <option value="JP" data-code="+81" data-format="000-0000-0000">🇯🇵 일본 (+81)</option>
+                    <option value="CN" data-code="+86" data-format="000 0000 0000">🇨🇳 중국 (+86)</option>
+                    <option value="GB" data-code="+44" data-format="00000 000000">🇬🇧 영국 (+44)</option>
+                    <option value="DE" data-code="+49" data-format="0000 00000000">🇩🇪 독일 (+49)</option>
+                    <option value="FR" data-code="+33" data-format="00 00 00 00 00">🇫🇷 프랑스 (+33)</option>
+                    <option value="AU" data-code="+61" data-format="0000 000 000">🇦🇺 호주 (+61)</option>
+                    <option value="CA" data-code="+1" data-format="(000) 000-0000">🇨🇦 캐나다 (+1)</option>
+                    <option value="IN" data-code="+91" data-format="00000 00000">🇮🇳 인도 (+91)</option>
+                  </select>
+                  <input type="tel" id="phone" name="phone" value="${sessionScope.loginMember.phone}" placeholder="010-1234-5678">
+                </div>
+                <div class="phone-validation" id="phoneValidation"></div>
+              </div>
             </div>
           </div>
 

@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initDeleteModal();
   initToggles();
   initFormValidation();
+  initPhoneFormatting();
 
   // 서버에서 전달된 메시지 처리
   handleServerMessages();
@@ -546,3 +547,246 @@ window.addEventListener('error', function(e) {
 });
 
 console.log("마이페이지 초기화 완료");
+
+// 전화번호 포맷팅 기능 초기화
+function initPhoneFormatting() {
+  const phoneInput = document.getElementById('phone');
+  const countrySelect = document.getElementById('countrySelect');
+  const phoneValidation = document.getElementById('phoneValidation');
+
+  if (!phoneInput || !countrySelect) return;
+
+  // 기존 전화번호에서 국가 코드 감지
+  detectCountryFromPhone();
+
+  // 국가 변경 시 포맷 업데이트
+  countrySelect.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const format = selectedOption.getAttribute('data-format');
+    const countryCode = selectedOption.getAttribute('data-code');
+
+    phoneInput.placeholder = getPlaceholderFromFormat(format);
+    phoneInput.value = ''; // 국가 변경 시 기존 번호 초기화
+    phoneValidation.textContent = `${countryCode} 형식으로 입력해주세요`;
+    phoneValidation.className = 'phone-validation info';
+  });
+
+  // 전화번호 입력 시 자동 포맷팅
+  phoneInput.addEventListener('input', function(e) {
+    const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+    const countryCode = selectedOption.value;
+    const format = selectedOption.getAttribute('data-format');
+
+    let value = e.target.value.replace(/\D/g, ''); // 숫자만 추출
+    let formattedValue = formatPhoneNumber(value, countryCode, format);
+
+    e.target.value = formattedValue;
+    validatePhoneNumber(formattedValue, countryCode);
+  });
+
+  // 초기 포맷팅 적용
+  if (phoneInput.value) {
+    const event = new Event('input');
+    phoneInput.dispatchEvent(event);
+  }
+}
+
+// 기존 전화번호에서 국가 감지
+function detectCountryFromPhone() {
+  const phoneInput = document.getElementById('phone');
+  const countrySelect = document.getElementById('countrySelect');
+
+  if (!phoneInput.value) return;
+
+  const phone = phoneInput.value.replace(/\D/g, '');
+
+  // 한국 번호 (010, 011, 016, 017, 018, 019로 시작)
+  if (phone.match(/^(010|011|016|017|018|019)/)) {
+    countrySelect.value = 'KR';
+    return;
+  }
+
+  // 미국/캐나다 번호 (1로 시작하고 10자리)
+  if (phone.match(/^1\d{10}$/)) {
+    countrySelect.value = 'US';
+    return;
+  }
+
+  // 일본 번호 (81로 시작)
+  if (phone.startsWith('81')) {
+    countrySelect.value = 'JP';
+    return;
+  }
+
+  // 중국 번호 (86으로 시작)
+  if (phone.startsWith('86')) {
+    countrySelect.value = 'CN';
+    return;
+  }
+}
+
+// 국가별 전화번호 포맷팅
+function formatPhoneNumber(numbers, countryCode, format) {
+  if (!numbers) return '';
+
+  switch (countryCode) {
+    case 'KR': // 한국: 010-1234-5678
+      if (numbers.length <= 3) return numbers;
+      if (numbers.length <= 7) return numbers.slice(0, 3) + '-' + numbers.slice(3);
+      return numbers.slice(0, 3) + '-' + numbers.slice(3, 7) + '-' + numbers.slice(7, 11);
+
+    case 'US':
+    case 'CA': // 미국/캐나다: (123) 456-7890
+      if (numbers.length <= 3) return numbers;
+      if (numbers.length <= 6) return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
+      return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
+
+    case 'JP': // 일본: 090-1234-5678
+      if (numbers.length <= 3) return numbers;
+      if (numbers.length <= 7) return numbers.slice(0, 3) + '-' + numbers.slice(3);
+      return numbers.slice(0, 3) + '-' + numbers.slice(3, 7) + '-' + numbers.slice(7, 11);
+
+    case 'CN': // 중국: 138 0013 8000
+      if (numbers.length <= 3) return numbers;
+      if (numbers.length <= 7) return numbers.slice(0, 3) + ' ' + numbers.slice(3);
+      return numbers.slice(0, 3) + ' ' + numbers.slice(3, 7) + ' ' + numbers.slice(7, 11);
+
+    case 'GB': // 영국: 07700 900123
+      if (numbers.length <= 5) return numbers;
+      return numbers.slice(0, 5) + ' ' + numbers.slice(5, 11);
+
+    case 'DE': // 독일: 0151 12345678
+      if (numbers.length <= 4) return numbers;
+      return numbers.slice(0, 4) + ' ' + numbers.slice(4, 12);
+
+    case 'FR': // 프랑스: 06 12 34 56 78
+      if (numbers.length <= 2) return numbers;
+      if (numbers.length <= 4) return numbers.slice(0, 2) + ' ' + numbers.slice(2);
+      if (numbers.length <= 6) return numbers.slice(0, 2) + ' ' + numbers.slice(2, 4) + ' ' + numbers.slice(4);
+      if (numbers.length <= 8) return numbers.slice(0, 2) + ' ' + numbers.slice(2, 4) + ' ' + numbers.slice(4, 6) + ' ' + numbers.slice(6);
+      return numbers.slice(0, 2) + ' ' + numbers.slice(2, 4) + ' ' + numbers.slice(4, 6) + ' ' + numbers.slice(6, 8) + ' ' + numbers.slice(8, 10);
+
+    case 'AU': // 호주: 0412 345 678
+      if (numbers.length <= 4) return numbers;
+      if (numbers.length <= 7) return numbers.slice(0, 4) + ' ' + numbers.slice(4);
+      return numbers.slice(0, 4) + ' ' + numbers.slice(4, 7) + ' ' + numbers.slice(7, 10);
+
+    case 'IN': // 인도: 98765 43210
+      if (numbers.length <= 5) return numbers;
+      return numbers.slice(0, 5) + ' ' + numbers.slice(5, 10);
+
+    default:
+      return numbers;
+  }
+}
+
+// 전화번호 유효성 검사
+function validatePhoneNumber(phoneNumber, countryCode) {
+  const phoneValidation = document.getElementById('phoneValidation');
+  const phoneInput = document.getElementById('phone');
+
+  if (!phoneNumber.trim()) {
+    phoneValidation.textContent = '';
+    phoneValidation.className = 'phone-validation';
+    phoneInput.style.borderColor = '#e5e7eb';
+    return;
+  }
+
+  const numbers = phoneNumber.replace(/\D/g, '');
+  let isValid = false;
+  let message = '';
+
+  switch (countryCode) {
+    case 'KR':
+      isValid = /^(010|011|016|017|018|019)\d{7,8}$/.test(numbers);
+      message = isValid ? '올바른 한국 전화번호입니다' : '010, 011, 016, 017, 018, 019로 시작하는 11자리 번호를 입력하세요';
+      break;
+
+    case 'US':
+    case 'CA':
+      isValid = /^\d{10}$/.test(numbers);
+      message = isValid ? '올바른 북미 전화번호입니다' : '10자리 번호를 입력하세요 (예: (555) 123-4567)';
+      break;
+
+    case 'JP':
+      isValid = /^(070|080|090)\d{8}$/.test(numbers);
+      message = isValid ? '올바른 일본 전화번호입니다' : '070, 080, 090으로 시작하는 11자리 번호를 입력하세요';
+      break;
+
+    case 'CN':
+      isValid = /^1[3-9]\d{9}$/.test(numbers);
+      message = isValid ? '올바른 중국 전화번호입니다' : '13-19로 시작하는 11자리 번호를 입력하세요';
+      break;
+
+    case 'GB':
+      isValid = /^07\d{9}$/.test(numbers);
+      message = isValid ? '올바른 영국 전화번호입니다' : '07로 시작하는 11자리 번호를 입력하세요';
+      break;
+
+    case 'DE':
+      isValid = /^01[5-7]\d{8,9}$/.test(numbers);
+      message = isValid ? '올바른 독일 전화번호입니다' : '015, 016, 017로 시작하는 번호를 입력하세요';
+      break;
+
+    case 'FR':
+      isValid = /^0[67]\d{8}$/.test(numbers);
+      message = isValid ? '올바른 프랑스 전화번호입니다' : '06 또는 07로 시작하는 10자리 번호를 입력하세요';
+      break;
+
+    case 'AU':
+      isValid = /^04\d{8}$/.test(numbers);
+      message = isValid ? '올바른 호주 전화번호입니다' : '04로 시작하는 10자리 번호를 입력하세요';
+      break;
+
+    case 'IN':
+      isValid = /^[6-9]\d{9}$/.test(numbers);
+      message = isValid ? '올바른 인도 전화번호입니다' : '6, 7, 8, 9로 시작하는 10자리 번호를 입력하세요';
+      break;
+
+    default:
+      isValid = numbers.length >= 8;
+      message = isValid ? '전화번호가 입력되었습니다' : '최소 8자리 이상 입력하세요';
+  }
+
+  phoneValidation.textContent = message;
+  phoneValidation.className = `phone-validation ${isValid ? 'valid' : 'invalid'}`;
+  phoneInput.style.borderColor = isValid ? '#10b981' : '#ef4444';
+
+  return isValid;
+}
+
+// 포맷에서 플레이스홀더 생성
+function getPlaceholderFromFormat(format) {
+  const placeholders = {
+    'KR': '010-1234-5678',
+    'US': '(555) 123-4567',
+    'CA': '(555) 123-4567',
+    'JP': '090-1234-5678',
+    'CN': '138 0013 8000',
+    'GB': '07700 900123',
+    'DE': '0151 12345678',
+    'FR': '06 12 34 56 78',
+    'AU': '0412 345 678',
+    'IN': '98765 43210'
+  };
+
+  return format ? format.replace(/0/g, '●') : '전화번호를 입력하세요';
+}
+
+// 국가별 통화 코드 반환
+function getCountryDialCode(countryCode) {
+  const dialCodes = {
+    'KR': '+82',
+    'US': '+1',
+    'CA': '+1',
+    'JP': '+81',
+    'CN': '+86',
+    'GB': '+44',
+    'DE': '+49',
+    'FR': '+33',
+    'AU': '+61',
+    'IN': '+91'
+  };
+
+  return dialCodes[countryCode] || '';
+}
