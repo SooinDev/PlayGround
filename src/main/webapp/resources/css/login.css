@@ -38,68 +38,9 @@ body {
   max-width: 500px;
 }
 
-/* 플로팅 요소들 */
+/* 플로팅 요소들 제거 */
 .floating-elements {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.element {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  animation: float 6s ease-in-out infinite;
-}
-
-.element-1 {
-  width: 80px;
-  height: 80px;
-  top: 20%;
-  left: 15%;
-  animation-delay: -1s;
-}
-
-.element-2 {
-  width: 60px;
-  height: 60px;
-  top: 60%;
-  left: 10%;
-  animation-delay: -3s;
-}
-
-.element-3 {
-  width: 100px;
-  height: 100px;
-  top: 10%;
-  right: 20%;
-  animation-delay: -2s;
-}
-
-.element-4 {
-  width: 40px;
-  height: 40px;
-  top: 70%;
-  right: 15%;
-  animation-delay: -4s;
-}
-
-.element-5 {
-  width: 120px;
-  height: 120px;
-  top: 40%;
-  right: 5%;
-  animation-delay: -5s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-20px) rotate(5deg); }
-  66% { transform: translateY(20px) rotate(-5deg); }
+  display: none;
 }
 
 /* 메인 일러스트레이션 */

@@ -38,77 +38,9 @@ body {
   max-width: 500px;
 }
 
-/* 플로팅 요소들 */
+/* 플로팅 요소들 제거 */
 .floating-elements {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.element {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  animation: float 8s ease-in-out infinite;
-}
-
-.element-1 {
-  width: 60px;
-  height: 60px;
-  top: 15%;
-  left: 10%;
-  animation-delay: -1s;
-}
-
-.element-2 {
-  width: 80px;
-  height: 80px;
-  top: 70%;
-  left: 5%;
-  animation-delay: -3s;
-}
-
-.element-3 {
-  width: 40px;
-  height: 40px;
-  top: 20%;
-  right: 15%;
-  animation-delay: -2s;
-}
-
-.element-4 {
-  width: 100px;
-  height: 100px;
-  top: 60%;
-  right: 10%;
-  animation-delay: -4s;
-}
-
-.element-5 {
-  width: 30px;
-  height: 30px;
-  top: 40%;
-  left: 25%;
-  animation-delay: -5s;
-}
-
-.element-6 {
-  width: 70px;
-  height: 70px;
-  top: 80%;
-  right: 30%;
-  animation-delay: -6s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-15px) rotate(3deg); }
-  50% { transform: translateY(10px) rotate(-2deg); }
-  75% { transform: translateY(-5px) rotate(1deg); }
+  display: none;
 }
 
 /* 커뮤니티 일러스트레이션 */
@@ -382,17 +314,24 @@ body {
 .input-with-button input {
   flex: 1;
   padding: 14px 16px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #374151;
   border-radius: 12px;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #ffffff;
+  background: #1f2937;
+  color: #f9fafb;
+  height: 54px; /* 명시적 높이 설정 */
+  box-sizing: border-box;
 }
 
 .input-with-button input:focus {
   outline: none;
   border-color: #10b981;
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.input-with-button input::placeholder {
+  color: #9ca3af;
 }
 
 /* 중복 확인 버튼 */
@@ -409,6 +348,8 @@ body {
   white-space: nowrap;
   position: relative;
   min-width: 100px;
+  height: 54px; /* 명시적 높이 설정 */
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
