@@ -37,44 +37,27 @@ public class MypageController {
    */
   @PostMapping("/mypage")
   public String updateProfile(MemberVO memberVO, HttpSession session, RedirectAttributes rttr) {
-    System.out.println("=== 프로필 업데이트 시작 ===");
-    System.out.println("받은 데이터 - 닉네임: " + memberVO.getNickname());
-    System.out.println("받은 데이터 - 이메일: " + memberVO.getEmail());
-    System.out.println("받은 데이터 - 이름: " + memberVO.getName());
 
     try {
       MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
       String email = loginMember.getEmail();
       String oldNickname = loginMember.getNickname();
 
-      System.out.println("기존 닉네임: " + oldNickname);
-      System.out.println("새 닉네임: " + memberVO.getNickname());
-
       // VO에 email 정보 추가
       memberVO.setEmail(email);
 
       // 닉네임이 변경되었는지 확인
       if (!oldNickname.equals(memberVO.getNickname())) {
-        System.out.println("닉네임 변경 감지 - changeNickname 호출");
         // 닉네임 변경 시 changeNickname 서비스 호출
         memberService.changeNickname(email, memberVO.getNickname());
-        System.out.println("changeNickname 완료");
-      } else {
-        System.out.println("닉네임 변경 없음");
       }
 
-      System.out.println("updateInfo 호출 중...");
       MemberVO updatedMember = memberService.updateInfo(memberVO);
-      System.out.println("updateInfo 완료");
 
-      // 세션 정보도 최신으로 갱신합니다.
       session.setAttribute("loginMember", updatedMember);
       rttr.addFlashAttribute("successMessage", "회원 정보가 성공적으로 수정되었습니다.");
-      System.out.println("=== 프로필 업데이트 성공 ===");
 
     } catch (Exception e) {
-      System.err.println("=== 프로필 업데이트 실패 ===");
-      System.err.println("에러 메시지: " + e.getMessage());
       e.printStackTrace(); // 전체 스택 트레이스 출력
       rttr.addFlashAttribute("errorMessage", e.getMessage());
     }

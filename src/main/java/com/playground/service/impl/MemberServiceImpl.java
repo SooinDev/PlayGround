@@ -169,14 +169,8 @@ public class MemberServiceImpl implements MemberService {
       throw new Exception("존재하지 않는 회원입니다.");
     }
 
-    System.out.println("=== 닉네임 변경 체크 시작 ===");
-    System.out.println("이메일: " + email);
-    System.out.println("새 닉네임: " + nickname);
-    System.out.println("현재 닉네임: " + member.getNickname());
-
     // 마지막 닉네임 변경 일자
     LocalDateTime nicknameChangedAt = member.getNicknameChangedAt();
-    System.out.println("마지막 변경 일시: " + nicknameChangedAt);
 
     if (nicknameChangedAt != null) {
       LocalDateTime now = LocalDateTime.now();
@@ -188,29 +182,17 @@ public class MemberServiceImpl implements MemberService {
       long hoursDiff = duration.toHours();
       long minutesDiff = duration.toMinutes();
 
-      System.out.println("시간 차이 - 일: " + daysDiff + ", 시간: " + hoursDiff + ", 분: " + minutesDiff);
-
       if (daysDiff < 7) {
         long daysLeft = 7 - daysDiff;
-        System.out.println("변경 불가 - " + daysLeft + "일 남음");
         throw new Exception("닉네임은 7일에 한 번만 변경할 수 있습니다. (" + daysLeft + "일 남음)");
-      } else {
-        System.out.println("변경 가능 - 7일 경과");
       }
-    } else {
-      System.out.println("첫 번째 닉네임 변경 - 변경 가능");
     }
 
-    System.out.println("=== 닉네임 변경 진행 ===");
-
     // 모든 조건 충족 시
-    System.out.println("updateNickname 호출 전");
     memberMapper.updateNickname(email, nickname);
-    System.out.println("updateNickname 호출 후");
 
     // 변경 후 멤버 정보 다시 조회해서 반환
     MemberVO updatedMember = memberMapper.selectMemberByEmail(email);
-    System.out.println("변경 완료 - 새로운 변경 일시: " + updatedMember.getNicknameChangedAt());
 
     return updatedMember;
   }
