@@ -80,7 +80,7 @@
       <div class="quick-actions">
         <div class="action-card">
           <div class="action-icon">📈</div>
-          <h3>활동 분석</h3>
+          <h3>대시보드</h3>
           <p>나의 활동 내역을 확인하세요</p>
           <a href="<c:url value='/dashboard'/>" class="action-link">보러가기 →</a>
         </div>
