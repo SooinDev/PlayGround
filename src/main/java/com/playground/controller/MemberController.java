@@ -30,7 +30,7 @@ public class MemberController {
 
     try {
       memberService.register(memberVO);
-      return "redirect:/login";
+      return "redirect:/member/login";
     } catch (EmailDuplicateException | NicknameDuplicateException e) {
       rttr.addFlashAttribute("errorMessage", e.getMessage());
       return "redirect:/member/register";
@@ -49,7 +49,7 @@ public class MemberController {
 
     if (loginMember != null) {
       session.setAttribute("loginMember", loginMember);
-      return "redirect:/member/index";
+      return "redirect:/";
     } else {
       rttr.addFlashAttribute("errorMessage", "이메일 또는 비밀번호가 일치하지 않습니다.");
       return "redirect:/member/login";
