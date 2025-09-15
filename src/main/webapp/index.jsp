@@ -28,7 +28,7 @@
             <span class="btn-icon">📊</span>
             대시보드
           </a>
-          <a href="<c:url value='/member/mypage/info'/>" class="nav-btn nav-btn-secondary">
+          <a href="<c:url value='/member/mypage'/>" class="nav-btn nav-btn-secondary">
             <span class="btn-icon">👤</span>
             마이페이지
           </a>

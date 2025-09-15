@@ -1112,3 +1112,7 @@ body.dark .phone-validation.info {
     margin-bottom: 3rem;
   }
 }
+
+body.dark .tab-btn.active {
+  color: white;
+}
