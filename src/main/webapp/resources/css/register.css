@@ -318,8 +318,8 @@ body {
   border-radius: 12px;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #1f2937;
-  color: #f9fafb;
+  background: #ffffff;
+  color: #1f2937;
   height: 54px; /* 명시적 높이 설정 */
   box-sizing: border-box;
 }
@@ -456,6 +456,7 @@ body {
   font-size: 16px;
   transition: all 0.3s ease;
   background: #ffffff;
+  color: #1f2937;
 }
 
 .form-group input:not(.input-with-button input):focus {
@@ -471,6 +472,8 @@ body {
 
 .password-field input {
   padding-right: 48px;
+  background: #ffffff; /* 배경색 명시 */
+  color: #1f2937; /* 검은색 텍스트 */
 }
 
 .password-toggle {
@@ -771,6 +774,44 @@ body {
 
 /* 다크 모드 지원 */
 @media (prefers-color-scheme: dark) {
+  .form-group input:not(.input-with-button input),
+  .input-with-button input,
+  .password-field input {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb; /* 다크모드에서는 밝은 텍스트 */
+  }
+
+  .form-group input:not(.input-with-button input):focus,
+  .input-with-button input:focus,
+  .password-field input:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  }
+
+  .check-btn {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+
+  .check-btn:hover:not(:disabled) {
+    border-color: #10b981;
+    color: #10b981;
+  }
+
+  .check-btn.success {
+    background: #065f46;
+    border-color: #10b981;
+    color: #6ee7b7;
+  }
+
+  .check-btn.error {
+    background: #7f1d1d;
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+
   body {
     background: #0d1117;
     color: #f0f6fc;
