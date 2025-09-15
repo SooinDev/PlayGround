@@ -972,3 +972,24 @@ body {
     min-height: 100vh;
   }
 }
+
+.form-group:has(.phone-input-container) {
+  margin-bottom: 48px;
+}
+
+/* 모바일에서는 세로 배치 */
+@media (max-width: 767px) {
+  .phone-input-wrapper {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .country-select {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .form-group:has(.phone-input-container) {
+    margin-bottom: 28px;
+  }
+}
