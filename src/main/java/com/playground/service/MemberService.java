@@ -50,7 +50,7 @@ public interface MemberService {
    * @return
    * @throws Exception
    */
-  MemberVO updateInfo(MemberVO memberVO) throws Exception;
+  void updateInfo(MemberVO memberVO) throws Exception;
 
   /**
    * 비밀번호 변경
@@ -74,4 +74,7 @@ public interface MemberService {
    * @return
    */
   boolean isNicknameDuplicated(String nickname);
+
+
+  MemberVO getMemberById(Long memberId);
 }

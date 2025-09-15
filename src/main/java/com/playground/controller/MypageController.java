@@ -35,21 +35,19 @@ public class MypageController {
    * @param rttr
    * @return
    */
-  @PostMapping("/mypage") // POST /member/mypage 요청을 처리
+  @PostMapping("/mypage")
   public String updateProfile(MemberVO formVO, HttpSession session, RedirectAttributes rttr) {
-
     try {
-      // 세션에서 현재 로그인된 사용자의 고유 ID(memberId) 가져오기
       MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
       formVO.setMemberId(loginMember.getMemberId());
 
-      // 서비스에 모든 정보가 담긴 VO를 전달하여 한 번에 처리
-      // 서비스가 내부적으로 닉네임, 이메일, 기타 정보를 모두 알아서 처리
-      MemberVO updatedMember = memberService.updateInfo(formVO);
+      // 수정 명령 (이 메소드가 끝나면 DB에 완전히 COMMIT)
+      memberService.updateInfo(formVO);
 
-//      System.out.println("### 세션에 갱신할 정보: " + updatedMember);
+      // 수정이 끝난 후, 완전히 새로운 트랜잭션으로 최신 정보를 다시 조회
+      MemberVO updatedMember = memberService.getMemberById(loginMember.getMemberId());
 
-      // 세션 정보 최신으로 갱신
+      // 최신 정보로 세션 갱신
       session.setAttribute("loginMember", updatedMember);
       rttr.addFlashAttribute("successMessage", "회원 정보가 성공적으로 수정되었습니다.");
 

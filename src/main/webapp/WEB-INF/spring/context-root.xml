@@ -35,8 +35,8 @@
   </bean>
 
   <mybatis-spring:scan base-package="com.playground.mapper"/>
-  <context:component-scan base-package="com.playground.service"/>
-  <context:component-scan base-package="com.playground.service.impl"/>
-  <context:component-scan base-package="com.playground.listener"/>
+  <context:component-scan base-package="com.playground">
+    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+  </context:component-scan>
 
 </beans>

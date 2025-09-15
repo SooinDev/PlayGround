@@ -31,6 +31,9 @@ public class MemberVO {
   /** 회원 주소 */
   private String address;
 
+  /** 회원 상태 */
+  private MemberStatus status;
+
   /** 회원 가입 일자 */
   private LocalDateTime memberCreatedAt;
 

@@ -5,7 +5,6 @@ import com.playground.service.MemberService;
 import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,10 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.UUID;
 
 @Service
@@ -85,13 +82,13 @@ public class MemberServiceImpl implements MemberService {
 
     // 로그인 성공/실패 처리
     if (dbMember != null && passwordEncoder.matches(memberVO.getPassword(), dbMember.getPassword())) {
-      // 로그인 성공
+      // 로그인 성공 시
       // 실패 기록 모두 삭제
       memberMapper.deleteLoginAttempts(email);
 
       return dbMember; // 로그인 성공한 회원 정보 반환
     } else {
-      // --- 로그인 실패 ---
+      // 로그인 실패 시
       // 실패 기록 DB에 추가
       LoginAttemptVO failAttempt = LoginAttemptVO.builder()
               .email(email)
@@ -181,8 +178,8 @@ public class MemberServiceImpl implements MemberService {
       // 마지막 변경 일자 - 현재 시간 차이 계산
       Duration duration = Duration.between(nicknameChangedAt, now);
       long daysDiff = duration.toDays();
-      long hoursDiff = duration.toHours();
-      long minutesDiff = duration.toMinutes();
+//      long hoursDiff = duration.toHours();
+//      long minutesDiff = duration.toMinutes();
 
       if (daysDiff < 7) {
         long daysLeft = 7 - daysDiff;
@@ -204,7 +201,7 @@ public class MemberServiceImpl implements MemberService {
    * @throws Exception
    */
   @Override
-  public MemberVO updateInfo(MemberVO formVO) throws Exception {
+  public void updateInfo(MemberVO formVO) throws Exception {
 
     // DB에서 현재 정보를 ID를 기준으로 조회 (가장 안전)
     MemberVO currentMember = memberMapper.selectMemberById(formVO.getMemberId());
@@ -233,15 +230,12 @@ public class MemberServiceImpl implements MemberService {
 
     // 닉네임 업데이트 (필요한 경우)
     if (!currentMember.getNickname().equals(formVO.getNickname())) {
-      // 이메일은 변경되었을 수 있으므로, 최신 이메일인 formVO.getEmail()을 사용합니다.
+      // 이메일은 변경되었을 수 있으므로, 최신 이메일인 formVO.getEmail() 사용
       memberMapper.updateNickname(formVO.getEmail(), formVO.getNickname());
     }
 
     // 나머지 정보(이름, 연락처, 주소) 업데이트
     memberMapper.updateInfo(formVO);
-
-    // 모든 변경이 끝난 후, 최종적으로 DB에서 최신 정보를 다시 조회하여 반환
-    return memberMapper.selectMemberById(formVO.getMemberId());
   }
 
   @Override
@@ -267,5 +261,10 @@ public class MemberServiceImpl implements MemberService {
       throw new Exception("이미 사용 중인 이메일입니다.");
     }
     memberMapper.updateEmail(currentEmail, newEmail);
+  }
+
+  @Override
+  public MemberVO getMemberById(Long memberId) {
+    return memberMapper.selectMemberById(memberId);
   }
 }
