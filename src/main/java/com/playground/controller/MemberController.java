@@ -1,7 +1,5 @@
 package com.playground.controller;
 
-import com.playground.exception.EmailDuplicateException;
-import com.playground.exception.NicknameDuplicateException;
 import com.playground.service.MemberService;
 import com.playground.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +32,8 @@ public class MemberController {
     try {
       memberService.register(memberVO);
       return "redirect:/member/login";
-    } catch (EmailDuplicateException | NicknameDuplicateException e) {
+    } catch (Exception e) { // Exception 하나로 모든 예외를 잡습니다.
+      // 실패 시 로직
       rttr.addFlashAttribute("errorMessage", e.getMessage());
       return "redirect:/member/register";
     }

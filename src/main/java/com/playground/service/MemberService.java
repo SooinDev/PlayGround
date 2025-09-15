@@ -1,7 +1,5 @@
 package com.playground.service;
 
-import com.playground.exception.EmailDuplicateException;
-import com.playground.exception.NicknameDuplicateException;
 import com.playground.vo.MemberVO;
 
 import javax.security.auth.login.AccountLockedException;
@@ -12,10 +10,9 @@ public interface MemberService {
   /**
    * 회원 가입
    * @param memberVO
-   * @throws EmailDuplicateException
-   * @throws NicknameDuplicateException
+   * @throws Exception
    */
-  void register(MemberVO memberVO) throws EmailDuplicateException, NicknameDuplicateException;
+  void register(MemberVO memberVO) throws Exception;
 
   /**
    * 로그인
