@@ -25,8 +25,6 @@ public class MemberController {
 
   @PostMapping("/register")
   public String register(MemberVO memberVO, RedirectAttributes rttr) {
-    System.out.println("========= POST /member/register 요청 발생 =========");
-    System.out.println("전달받은 MemberVO: " + memberVO.toString());
 
     try {
       memberService.register(memberVO);
@@ -35,6 +33,5 @@ public class MemberController {
       rttr.addFlashAttribute("errorMessage", e.getMessage());
       return "redirect:/member/register";
     }
-
   }
 }
