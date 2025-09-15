@@ -24,6 +24,9 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>com.playground.listener.MyServletContextListener</listener-class>
+  </listener>
 
   <servlet>
     <servlet-name>appServlet</servlet-name>

@@ -6,12 +6,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
                            http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
-
+  <context:property-placeholder location="classpath:/application.properties"/>
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
     <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
-    <property name="url" value="jdbc:mysql://localhost:3306/YOUR_DB_NAME?serverTimezone=Asia/Seoul"/>
-    <property name="username" value="YOUR_DB_USERNAME"/>
-    <property name="password" value="YOUR_DB_PASSWORD"/>
+    <property name="url" value="jdbc:mysql://localhost:3306/playground?serverTimezone=Asia/Seoul"/>
+    <property name="username" value="${spring.datasource.username}"/>
+    <property name="password" value="${spring.datasource.password}"/>
   </bean>
 
   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -19,9 +19,10 @@
     <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
   </bean>
 
-  <mybatis-spring:scan base-package="com.playground.persistence"/>
-
+  <mybatis-spring:scan base-package="com.playground.mapper"/>
   <context:component-scan base-package="com.playground.service"/>
-  <context:component-scan base-package="com.playground.impl"/>
+  <context:component-scan base-package="com.playground.service.impl"/>
+  <context:component-scan base-package="com.playground.exception"/>
+  <context:component-scan base-package="com.playground.listener"/>
 
 </beans>

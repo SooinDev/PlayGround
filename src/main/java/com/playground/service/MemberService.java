@@ -1,7 +1,10 @@
 package com.playground.service;
 
+import com.playground.exception.EmailDuplicateException;
+import com.playground.exception.NicknameDuplicateException;
 import com.playground.vo.MemberVO;
 
 public interface MemberService {
-  int register(MemberVO memberVO);
+
+  void register(MemberVO memberVO) throws EmailDuplicateException, NicknameDuplicateException;
 }
