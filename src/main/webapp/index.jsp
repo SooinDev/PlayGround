@@ -9,22 +9,54 @@
   <link rel="stylesheet" href="<c:url value='/resources/css/index.css'/>">
 </head>
 <body>
+<!-- 로그인 성공 시 환영 메시지 -->
+<c:if test="${not empty sessionScope.loginMember}">
+  <div class="welcome-message" id="welcomeMessage">
+    <div class="welcome-content">
+      <div class="welcome-icon">👋</div>
+      <div class="welcome-text">
+        <h3>환영합니다, ${sessionScope.loginMember.nickname}님!</h3>
+        <p>PlayGround에 성공적으로 로그인되었습니다.</p>
+      </div>
+      <button class="welcome-close" onclick="closeWelcomeMessage()">×</button>
+    </div>
+  </div>
+</c:if>
+
 <div class="hero-section" id="hero">
   <h1 class="logo">PlayGround</h1>
-  <h2 class="tagline">당신의 디지털 공간</h2>
-  <p class="subtitle">
-    혁신적인 회원 관리 시스템으로 더 나은 커뮤니티를 만들어보세요.
-    간편하고 안전한 가입 절차를 통해 새로운 디지털 경험을 시작하세요.
-  </p>
-
-  <div class="cta-buttons">
-    <a href="<c:url value='/member/register'/>" class="btn btn-primary">
-      회원가입
-    </a>
-    <a href="<c:url value='/member/login'/>" class="btn btn-secondary">
-      로그인
-    </a>
-  </div>
+  <c:choose>
+    <c:when test="${not empty sessionScope.loginMember}">
+      <h2 class="tagline">${sessionScope.loginMember.nickname}님의 디지털 공간</h2>
+      <p class="subtitle">
+        다시 오신 것을 환영합니다! 새로운 기능들을 둘러보시고
+        PlayGround에서 더 많은 것들을 경험해보세요.
+      </p>
+      <div class="cta-buttons">
+        <a href="<c:url value='/dashboard'/>" class="btn btn-primary">
+          대시보드
+        </a>
+        <a href="<c:url value='/member/logout'/>" class="btn btn-secondary">
+          로그아웃
+        </a>
+      </div>
+    </c:when>
+    <c:otherwise>
+      <h2 class="tagline">당신의 디지털 공간</h2>
+      <p class="subtitle">
+        혁신적인 회원 관리 시스템으로 더 나은 커뮤니티를 만들어보세요.
+        간편하고 안전한 가입 절차를 통해 새로운 디지털 경험을 시작하세요.
+      </p>
+      <div class="cta-buttons">
+        <a href="<c:url value='/member/register'/>" class="btn btn-primary">
+          회원가입
+        </a>
+        <a href="<c:url value='/member/login'/>" class="btn btn-secondary">
+          로그인
+        </a>
+      </div>
+    </c:otherwise>
+  </c:choose>
 </div>
 
 <div class="features" id="features">

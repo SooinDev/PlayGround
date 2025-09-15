@@ -16,7 +16,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 버튼 인터랙션 효과
   initButtonEffects();
+
+  // 환영 메시지 자동 닫기
+  initWelcomeMessage();
 });
+
+// 환영 메시지 관리
+function initWelcomeMessage() {
+  const welcomeMessage = document.getElementById('welcomeMessage');
+  if (welcomeMessage) {
+    // 5초 후 자동으로 닫기
+    setTimeout(() => {
+      closeWelcomeMessage();
+    }, 5000);
+  }
+}
+
+// 환영 메시지 닫기 함수 (전역 함수로 선언)
+function closeWelcomeMessage() {
+  const welcomeMessage = document.getElementById('welcomeMessage');
+  if (welcomeMessage) {
+    welcomeMessage.classList.add('fade-out');
+    setTimeout(() => {
+      welcomeMessage.remove();
+    }, 300);
+  }
+}
 
 // 네비게이션 도트 초기화
 function initNavigationDots() {
