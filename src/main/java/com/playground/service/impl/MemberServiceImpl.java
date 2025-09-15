@@ -4,6 +4,7 @@ import com.playground.exception.EmailDuplicateException;
 import com.playground.exception.NicknameDuplicateException;
 import com.playground.mapper.MemberMapper;
 import com.playground.service.MemberService;
+import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import javax.security.auth.login.AccountLockedException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 @Service
@@ -57,23 +60,45 @@ public class MemberServiceImpl implements MemberService {
   /**
    * 로그인
    * @param memberVO
+   * @param request
    * @return
+   * @throws AccountLockedException
    */
   @Override
-  public MemberVO login(MemberVO memberVO) {
-    MemberVO dbMember = memberMapper.selectMemberByEmail(memberVO.getEmail());
+  public MemberVO login(MemberVO memberVO, HttpServletRequest request) throws AccountLockedException {
 
-    if (dbMember != null) {
-      String rawPassword = memberVO.getPassword();      // 사용자가 입력한 순수 비밀번호
-      String encodedPassword = dbMember.getPassword();  // DB에 저장된 암호화된 비밀번호
+    String email = memberVO.getEmail();
+    String ipAddress = request.getRemoteAddr(); // IP 주소 미리 가져오기
 
-      if (passwordEncoder.matches(rawPassword, encodedPassword)) {
-        return dbMember;
-      }
+    // 계정 잠김 여부 확인
+    int failCount = memberMapper.countRecentLoginFailures(email);
+    if (failCount >= 5) {
+      throw new AccountLockedException("5회 이상 로그인에 실패하여 계정이 10분간 잠겼습니다.");
     }
 
-    // 이메일이 없거나 비밀번호가 틀린 경우, null 반환
-    return null;
+    // 이메일로 회원 정보 조회
+    MemberVO dbMember = memberMapper.selectMemberByEmail(email);
+
+    // 로그인 성공/실패 처리
+    if (dbMember != null && passwordEncoder.matches(memberVO.getPassword(), dbMember.getPassword())) {
+      // 로그인 성공
+      // 실패 기록 모두 삭제
+      memberMapper.deleteLoginAttempts(email);
+
+      return dbMember; // 로그인 성공한 회원 정보 반환
+    } else {
+      // --- 로그인 실패 ---
+      // 실패 기록 DB에 추가
+      LoginAttemptVO failAttempt = LoginAttemptVO.builder()
+              .email(email)
+              .ipAddress(ipAddress)
+              .success(false)
+              .attemptType("MEMBER")
+              .build();
+      memberMapper.insertLoginAttempt(failAttempt);
+
+      return null; // 로그인 실패 시 null 반환
+    }
   }
 
   /**

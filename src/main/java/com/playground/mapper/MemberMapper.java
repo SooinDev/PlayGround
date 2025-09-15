@@ -1,12 +1,13 @@
 package com.playground.mapper;
 
+import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.MemberVO;
 import org.apache.ibatis.annotations.Param;
 
 public interface MemberMapper {
 
   /**
-   * 회원 정보 DB에 삽입
+   * 회원 정보 DB에 추가
    * @param member
    */
   void insertMember(MemberVO member);
@@ -38,4 +39,23 @@ public interface MemberMapper {
    * @param encodedPassword
    */
   void updatePassword(@Param("email") String email, @Param("password") String encodedPassword);
+
+  /**
+   * 최근 로그인 실패 횟수
+   * @param email
+   * @return
+   */
+  int countRecentLoginFailures(String email);
+
+  /**
+   * 로그인 시도 기록 모두 삭제
+   * @param email
+   */
+  void deleteLoginAttempts(String email);
+
+  /**
+   * 로그인 시도 기록 추가
+   * @param failAttempt
+   */
+  void insertLoginAttempt(LoginAttemptVO failAttempt);
 }

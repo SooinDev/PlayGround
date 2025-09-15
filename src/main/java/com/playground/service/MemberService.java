@@ -4,6 +4,9 @@ import com.playground.exception.EmailDuplicateException;
 import com.playground.exception.NicknameDuplicateException;
 import com.playground.vo.MemberVO;
 
+import javax.security.auth.login.AccountLockedException;
+import javax.servlet.http.HttpServletRequest;
+
 public interface MemberService {
 
   /**
@@ -17,10 +20,11 @@ public interface MemberService {
   /**
    * 로그인
    * @param memberVO
+   * @param request
    * @return
+   * @throws AccountLockedException
    */
-  MemberVO login(MemberVO memberVO);
-
+  MemberVO login(MemberVO memberVO, HttpServletRequest request) throws AccountLockedException;
   /**
    * 비밀번호 찾기
    * @param email

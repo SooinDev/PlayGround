@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.security.auth.login.AccountLockedException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -44,17 +46,24 @@ public class MemberController {
   }
 
   @PostMapping("/login")
-  public String login(HttpSession session, MemberVO memberVO, RedirectAttributes rttr) {
+  public String login(HttpSession session, MemberVO memberVO, RedirectAttributes rttr, HttpServletRequest request) throws AccountLockedException {
 
-    MemberVO loginMember = memberService.login(memberVO);
+    try {
+      MemberVO loginMember = memberService.login(memberVO, request);
 
-    if (loginMember != null) {
-      session.setAttribute("loginMember", loginMember);
-      return "redirect:/";
-    } else {
-      rttr.addFlashAttribute("errorMessage", "이메일 또는 비밀번호가 일치하지 않습니다.");
+      if (loginMember != null) {
+        session.setAttribute("loginMember", loginMember);
+        return "redirect:/";
+      } else {
+        rttr.addFlashAttribute("errorMessage", "이메일 또는 비밀번호가 일치하지 않습니다.");
+        return "redirect:/member/login";
+      }
+
+    } catch (Exception e) {
+      rttr.addFlashAttribute("errorMessage", e.getMessage());
       return "redirect:/member/login";
     }
+
   }
 
   @GetMapping("/forgot-password")

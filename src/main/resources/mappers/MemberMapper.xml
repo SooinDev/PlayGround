@@ -11,27 +11,36 @@
   </insert>
 
   <select id="isEmailDuplicated" parameterType="string" resultType="boolean">
-    SELECT COUNT(*) > 0
-    FROM member
-    WHERE email = #{email}
+    SELECT COUNT(*) > 0 FROM member WHERE email = #{email}
   </select>
 
   <select id="isNicknameDuplicated" parameterType="string" resultType="boolean">
-    SELECT COUNT(*) > 0
-    FROM member
-    WHERE nickname = #{nickname}
+    SELECT COUNT(*) > 0 FROM member WHERE nickname = #{nickname}
   </select>
 
   <select id="selectMemberByEmail" parameterType="string" resultType="com.playground.vo.MemberVO">
-    SELECT *
-    FROM member
-    WHERE email = #{email}
+    SELECT * FROM member WHERE email = #{email}
   </select>
 
   <update id="updatePassword">
-    UPDATE member
-    SET password = #{password}
-    WHERE email = #{email}
+    UPDATE member SET password = #{password} WHERE email = #{email}
   </update>
+
+  <insert id="insertLoginAttempt" parameterType="com.playground.vo.LoginAttemptVO">
+    INSERT INTO login_attempt (email, ip_address, success, attempt_type)
+    VALUES (#{email}, #{ipAddress}, #{success}, #{attemptType})
+  </insert>
+
+  <select id="countRecentLoginFailures" parameterType="string" resultType="int">
+    SELECT count(*)
+    FROM login_attempt
+    WHERE email = #{email}
+      AND success = false
+      AND attempted_at > NOW() - INTERVAL 10 MINUTE
+  </select>
+
+  <delete id="deleteLoginAttempts" parameterType="string">
+    DELETE FROM login_attempt WHERE email = #{email}
+  </delete>
 
 </mapper>
