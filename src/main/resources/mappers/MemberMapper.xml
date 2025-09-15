@@ -22,4 +22,10 @@
     WHERE nickname = #{nickname}
   </select>
 
+  <select id="selectMemberByEmail" parameterType="string" resultType="com.playground.vo.MemberVO">
+    SELECT *
+    FROM member
+    WHERE email = #{email}
+  </select>
+
 </mapper>

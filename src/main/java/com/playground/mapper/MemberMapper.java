@@ -1,7 +1,5 @@
 package com.playground.mapper;
 
-import com.playground.exception.EmailDuplicateException;
-import com.playground.exception.NicknameDuplicateException;
 import com.playground.vo.MemberVO;
 
 public interface MemberMapper {
@@ -25,4 +23,11 @@ public interface MemberMapper {
    * @return
    */
   boolean isNicknameDuplicated(String nickname);
+
+  /**
+   * 이메일(로그인 ID)로 회원 정보 조회
+   * @param email
+   * @return
+   */
+  MemberVO selectMemberByEmail(String email);
 }

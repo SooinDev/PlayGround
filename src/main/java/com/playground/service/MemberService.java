@@ -7,4 +7,6 @@ import com.playground.vo.MemberVO;
 public interface MemberService {
 
   void register(MemberVO memberVO) throws EmailDuplicateException, NicknameDuplicateException;
+
+  MemberVO login(MemberVO memberVO);
 }

@@ -39,4 +39,21 @@ public class MemberServiceImpl implements MemberService {
     // 4. DB에 저장
     memberMapper.insertMember(memberVO);
   }
+
+  @Override
+  public MemberVO login(MemberVO memberVO) {
+    MemberVO dbMember = memberMapper.selectMemberByEmail(memberVO.getEmail());
+
+    if (dbMember != null) {
+      String rawPassword = memberVO.getPassword();      // 사용자가 입력한 순수 비밀번호
+      String encodedPassword = dbMember.getPassword();  // DB에 저장된 암호화된 비밀번호
+
+      if (passwordEncoder.matches(rawPassword, encodedPassword)) {
+        return dbMember;
+      }
+    }
+
+    // 이메일이 없거나 비밀번호가 틀린 경우, null 반환
+    return null;
+  }
 }
