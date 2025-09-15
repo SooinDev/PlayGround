@@ -5,42 +5,90 @@
 
 <mapper namespace="com.playground.mapper.MemberMapper">
 
+  <!-- Member 엔티티 ResultMap -->
+  <resultMap id="memberResultMap" type="com.playground.vo.MemberVO">
+    <id property="memberId" column="member_id"/>
+    <result property="email" column="email"/>
+    <result property="password" column="password"/>
+    <result property="nickname" column="nickname"/>
+    <result property="nicknameChangedAt" column="nickname_changed_at"/>
+    <result property="name" column="name"/>
+    <result property="phone" column="phone"/>
+    <result property="address" column="address"/>
+    <result property="memberCreatedAt" column="created_at"/>
+    <result property="memberUpdatedAt" column="updated_at"/>
+  </resultMap>
+
+  <!-- 회원 가입 -->
   <insert id="insertMember" parameterType="com.playground.vo.MemberVO">
     INSERT INTO member (email, password, nickname, name, phone, address)
     VALUES (#{email}, #{password}, #{nickname}, #{name}, #{phone}, #{address})
   </insert>
 
+  <!-- 이메일 중복 체크 -->
   <select id="isEmailDuplicated" parameterType="string" resultType="boolean">
-    SELECT COUNT(*) > 0 FROM member WHERE email = #{email}
+    SELECT COUNT(*) > 0
+    FROM member
+    WHERE email = #{email}
   </select>
 
+  <!-- 닉네임 중복 체크 -->
   <select id="isNicknameDuplicated" parameterType="string" resultType="boolean">
-    SELECT COUNT(*) > 0 FROM member WHERE nickname = #{nickname}
+    SELECT COUNT(*) > 0
+    FROM member
+    WHERE nickname = #{nickname}
   </select>
 
-  <select id="selectMemberByEmail" parameterType="string" resultType="com.playground.vo.MemberVO">
-    SELECT * FROM member WHERE email = #{email}
+  <!-- 이메일로 회원 조회 -->
+  <select id="selectMemberByEmail" parameterType="string" resultMap="memberResultMap">
+    SELECT *
+    FROM member
+    WHERE email = #{email}
   </select>
 
+  <!-- 비밀번호 변경 -->
   <update id="updatePassword">
-    UPDATE member SET password = #{password} WHERE email = #{email}
+    UPDATE member
+    SET password = #{password}
+    WHERE email = #{email}
   </update>
 
+  <!-- 닉네임 변경 (7일 제한 포함) -->
+  <update id="updateNickname">
+    UPDATE member
+    SET nickname = #{nickname},
+        nickname_changed_at = NOW()
+    WHERE email = #{email}
+  </update>
+
+  <!-- 회원 정보 수정 -->
+  <update id="updateInfo" parameterType="com.playground.vo.MemberVO">
+    UPDATE member
+    SET name = #{name},
+        phone = #{phone},
+        address = #{address}
+    WHERE email = #{email}
+  </update>
+
+  <!-- 로그인 시도 기록 추가 -->
   <insert id="insertLoginAttempt" parameterType="com.playground.vo.LoginAttemptVO">
     INSERT INTO login_attempt (email, ip_address, success, attempt_type)
     VALUES (#{email}, #{ipAddress}, #{success}, #{attemptType})
   </insert>
 
+  <!-- 최근 로그인 실패 횟수 조회 -->
   <select id="countRecentLoginFailures" parameterType="string" resultType="int">
-    SELECT count(*)
+    SELECT COUNT(*)
     FROM login_attempt
     WHERE email = #{email}
       AND success = false
       AND attempted_at > NOW() - INTERVAL 10 MINUTE
   </select>
 
+  <!-- 로그인 시도 기록 삭제 -->
   <delete id="deleteLoginAttempts" parameterType="string">
-    DELETE FROM login_attempt WHERE email = #{email}
+    DELETE FROM login_attempt
+    WHERE email = #{email}
   </delete>
 
 </mapper>

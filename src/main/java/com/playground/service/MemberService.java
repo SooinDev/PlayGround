@@ -4,6 +4,7 @@ import com.playground.vo.MemberVO;
 
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Member;
 
 public interface MemberService {
 
@@ -35,4 +36,29 @@ public interface MemberService {
    * @return
    */
   boolean issueTemporaryPassword(String email);
+
+  /**
+   * 닉네임 변경 (7일)
+   * @param email
+   * @param nickname
+   * @return
+   */
+  MemberVO changeNickname(String email, String nickname) throws Exception;
+
+  /**
+   * 회원정보 수정
+   * @param memberVO
+   * @return
+   * @throws Exception
+   */
+  MemberVO updateInfo(MemberVO memberVO) throws Exception;
+
+  /**
+   * 비밀번호 변경
+   * @param email
+   * @param currentPassword
+   * @param newPassword
+   * @throws Exception
+   */
+  void changePassword(String email, String currentPassword, String newPassword) throws Exception;
 }

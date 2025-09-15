@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 환영 메시지 자동 닫기
   initWelcomeMessage();
+
+  // 상단 네비게이션 기능
+  initTopNavigation();
+
+  // 빠른 액션 카드 애니메이션
+  initQuickActions();
 });
 
 // 환영 메시지 관리
@@ -43,6 +49,105 @@ function closeWelcomeMessage() {
   }
 }
 
+// 상단 네비게이션 초기화
+function initTopNavigation() {
+  const navbar = document.querySelector('.top-navbar');
+  if (!navbar) return;
+
+  // 스크롤에 따른 네비게이션 바 스타일 변경
+  let lastScrollY = window.scrollY;
+
+  window.addEventListener('scroll', function() {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > 50) {
+      navbar.style.background = 'rgba(0, 0, 0, 0.98)';
+      navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.2)';
+    } else {
+      navbar.style.background = 'rgba(0, 0, 0, 0.95)';
+      navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.1)';
+    }
+
+    // 스크롤 방향에 따른 네비게이션 바 숨김/표시
+    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      // 아래로 스크롤 - 네비게이션 바 숨김
+      navbar.style.transform = 'translateY(-100%)';
+    } else {
+      // 위로 스크롤 - 네비게이션 바 표시
+      navbar.style.transform = 'translateY(0)';
+    }
+
+    lastScrollY = currentScrollY;
+  });
+
+  // 네비게이션 버튼 클릭 효과
+  const navButtons = document.querySelectorAll('.nav-btn');
+  navButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      // 로그아웃 버튼 클릭 시 확인 대화상자
+      if (this.classList.contains('nav-btn-logout')) {
+        if (!confirm('정말 로그아웃하시겠습니까?')) {
+          e.preventDefault();
+          return false;
+        }
+      }
+
+      // 클릭 애니메이션
+      this.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        this.style.transform = '';
+      }, 150);
+    });
+  });
+}
+
+// 빠른 액션 카드 애니메이션
+function initQuickActions() {
+  const actionCards = document.querySelectorAll('.action-card');
+
+  if (actionCards.length === 0) return;
+
+  // 카드 호버 효과 개선
+  actionCards.forEach((card, index) => {
+    // 초기 애니메이션
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    card.style.transition = 'all 0.6s ease';
+
+    setTimeout(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 800 + (index * 200));
+
+    // 마우스 이벤트
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-8px) scale(1.02)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0) scale(1)';
+    });
+
+    // 카드 클릭 시 해당 링크로 이동
+    card.addEventListener('click', function() {
+      const actionLink = this.querySelector('.action-link');
+      if (actionLink) {
+        if (actionLink.getAttribute('href').startsWith('#')) {
+          // 앵커 링크인 경우 부드러운 스크롤
+          const targetId = actionLink.getAttribute('href').substring(1);
+          const targetElement = document.getElementById(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+          }
+        } else {
+          // 일반 링크인 경우 페이지 이동
+          window.location.href = actionLink.getAttribute('href');
+        }
+      }
+    });
+  });
+}
+
 // 네비게이션 도트 초기화
 function initNavigationDots() {
   const navDots = document.querySelectorAll('.nav-dot');
@@ -64,10 +169,10 @@ function initNavigationDots() {
 
 // 스크롤 효과 초기화
 function initScrollEffects() {
-  window.addEventListener('scroll', function() {
+  window.addEventListener('scroll', throttle(function() {
     updateNavigationDots();
     addParallaxEffect();
-  });
+  }, 16));
 }
 
 // 네비게이션 도트 업데이트
@@ -94,7 +199,7 @@ function addParallaxEffect() {
   const heroSection = document.querySelector('.hero-section');
 
   if (heroSection) {
-    const rate = scrolled * -0.5;
+    const rate = scrolled * -0.3;
     heroSection.style.transform = `translateY(${rate}px)`;
   }
 }
@@ -170,28 +275,6 @@ function initButtonEffects() {
   });
 }
 
-// 스크롤 진행률 표시 (선택사항)
-function initScrollProgress() {
-  const progressBar = document.createElement('div');
-  progressBar.className = 'scroll-progress';
-  progressBar.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background: linear-gradient(90deg, #007aff, #5ac8fa);
-        z-index: 1000;
-        transition: width 0.1s ease;
-    `;
-  document.body.appendChild(progressBar);
-
-  window.addEventListener('scroll', function() {
-    const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-    progressBar.style.width = scrolled + '%';
-  });
-}
-
 // 키보드 네비게이션 지원
 document.addEventListener('keydown', function(e) {
   // 스페이스바로 스크롤
@@ -203,12 +286,21 @@ document.addEventListener('keydown', function(e) {
   // 화살표 키로 섹션 이동
   if (e.code === 'ArrowDown') {
     const featuresSection = document.getElementById('features');
-    featuresSection.scrollIntoView({ behavior: 'smooth' });
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   if (e.code === 'ArrowUp') {
     const heroSection = document.getElementById('hero');
-    heroSection.scrollIntoView({ behavior: 'smooth' });
+    if (heroSection) {
+      heroSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // ESC 키로 환영 메시지 닫기
+  if (e.code === 'Escape') {
+    closeWelcomeMessage();
   }
 });
 
@@ -246,7 +338,7 @@ function handleSwipe() {
   }
 }
 
-// 성능 최적화: 스크롤 이벤트 throttling
+// 성능 최적화: throttle 함수
 function throttle(func, limit) {
   let inThrottle;
   return function() {
@@ -260,19 +352,75 @@ function throttle(func, limit) {
   }
 }
 
-// 애니메이션 성능 최적화
-function optimizeAnimations() {
-  // 스크롤 이벤트 최적화
-  const throttledScrollHandler = throttle(function() {
-    updateNavigationDots();
-    addParallaxEffect();
-  }, 16); // 60fps
+// 알림 메시지 표시 함수
+function showNotification(message, type = 'info', duration = 3000) {
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    max-width: 320px;
+    word-wrap: break-word;
+  `;
 
-  window.addEventListener('scroll', throttledScrollHandler);
+  // 타입별 배경색 설정
+  switch(type) {
+    case 'success':
+      notification.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      break;
+    case 'error':
+      notification.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+      break;
+    case 'warning':
+      notification.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+      break;
+    default:
+      notification.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+  }
+
+  notification.textContent = message;
+  document.body.appendChild(notification);
+
+  // 애니메이션
+  setTimeout(() => {
+    notification.style.transform = 'translateX(0)';
+  }, 100);
+
+  // 자동 제거
+  setTimeout(() => {
+    notification.style.transform = 'translateX(400px)';
+    setTimeout(() => {
+      if (document.body.contains(notification)) {
+        document.body.removeChild(notification);
+      }
+    }, 300);
+  }, duration);
 }
 
-// 초기화 완료 후 성능 최적화 적용
+// 사용자 인터랙션 추적 (분석용)
+function trackUserInteraction(action, element) {
+  console.log(`User Action: ${action} on ${element}`);
+  // 여기에 실제 분석 코드를 추가할 수 있습니다.
+}
+
+// 초기화 완료 후 실행
 window.addEventListener('load', function() {
-  optimizeAnimations();
   console.log("페이지 로드 및 최적화 완료");
+
+  // 사용자에게 환영 메시지 표시 (로그인하지 않은 경우)
+  const isLoggedIn = document.querySelector('.top-navbar');
+  if (!isLoggedIn) {
+    setTimeout(() => {
+      showNotification('PlayGround에 오신 것을 환영합니다! 🎉', 'info', 4000);
+    }, 2000);
+  }
 });

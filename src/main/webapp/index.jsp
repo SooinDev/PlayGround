@@ -9,6 +9,39 @@
   <link rel="stylesheet" href="<c:url value='/resources/css/index.css'/>">
 </head>
 <body>
+<!-- 로그인 시 상단 네비게이션 바 -->
+<c:if test="${not empty sessionScope.loginMember}">
+  <nav class="top-navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <span class="brand-logo">PlayGround</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-user-info">
+          <div class="user-avatar">
+            <span class="avatar-text">${sessionScope.loginMember.nickname.substring(0,1).toUpperCase()}</span>
+          </div>
+          <span class="username">${sessionScope.loginMember.nickname}님</span>
+        </div>
+        <div class="nav-buttons">
+          <a href="<c:url value='/dashboard'/>" class="nav-btn nav-btn-primary">
+            <span class="btn-icon">📊</span>
+            대시보드
+          </a>
+          <a href="<c:url value='/member/mypage/info'/>" class="nav-btn nav-btn-secondary">
+            <span class="btn-icon">👤</span>
+            마이페이지
+          </a>
+          <a href="<c:url value='/member/logout'/>" class="nav-btn nav-btn-logout">
+            <span class="btn-icon">🚪</span>
+            로그아웃
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</c:if>
+
 <!-- 로그인 성공 시 환영 메시지 -->
 <c:if test="${not empty sessionScope.loginMember}">
   <div class="welcome-message" id="welcomeMessage">
@@ -34,11 +67,35 @@
       </p>
       <div class="cta-buttons">
         <a href="<c:url value='/dashboard'/>" class="btn btn-primary">
-          대시보드
+          <span class="btn-icon">📊</span>
+          대시보드 바로가기
         </a>
-        <a href="<c:url value='/member/logout'/>" class="btn btn-secondary">
-          로그아웃
+        <a href="<c:url value='/member/mypage'/>" class="btn btn-secondary">
+          <span class="btn-icon">👤</span>
+          내 프로필
         </a>
+      </div>
+
+      <!-- 로그인 사용자를 위한 빠른 액션 카드 -->
+      <div class="quick-actions">
+        <div class="action-card">
+          <div class="action-icon">📈</div>
+          <h3>활동 분석</h3>
+          <p>나의 활동 내역을 확인하세요</p>
+          <a href="<c:url value='/dashboard'/>" class="action-link">보러가기 →</a>
+        </div>
+        <div class="action-card">
+          <div class="action-icon">⚙️</div>
+          <h3>계정 설정</h3>
+          <p>프로필과 설정을 관리하세요</p>
+          <a href="<c:url value='/member/mypage'/>" class="action-link">설정하기 →</a>
+        </div>
+        <div class="action-card">
+          <div class="action-icon">🌟</div>
+          <h3>새로운 기능</h3>
+          <p>최신 업데이트를 확인하세요</p>
+          <a href="#features" class="action-link">둘러보기 →</a>
+        </div>
       </div>
     </c:when>
     <c:otherwise>

@@ -58,4 +58,17 @@ public interface MemberMapper {
    * @param failAttempt
    */
   void insertLoginAttempt(LoginAttemptVO failAttempt);
+
+  /**
+   * 닉네임 변경 (7일)
+   * @param email
+   * @param nickname
+   */
+  void updateNickname(@Param("email") String email, @Param("nickname") String nickname);
+
+  /**
+   * 회원 정보 수정 (이름, 연락처, 주소)
+   * @param memberVO
+   */
+  void updateInfo(MemberVO memberVO);
 }

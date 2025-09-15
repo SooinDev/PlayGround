@@ -25,7 +25,7 @@ public class MemberVO {
   /** 회원 이름 */
   private String name;
 
-  /** 회원 전화 번호 */
+  /** 회원 연락처 */
   private String phone;
 
   /** 회원 주소 */

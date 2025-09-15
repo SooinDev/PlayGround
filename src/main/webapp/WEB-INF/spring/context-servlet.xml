@@ -18,4 +18,13 @@
 
   <context:component-scan base-package="com.playground.controller"/>
 
+  <mvc:interceptors>
+    <mvc:interceptor>
+      <mvc:mapping path="/mypage/**"/>
+
+      <bean class="com.playground.interceptor.LoginCheckInterceptor"/>
+    </mvc:interceptor>
+  </mvc:interceptors>
+
 </beans>
+

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -21,32 +20,38 @@ public class MemberController {
   @Autowired
   MemberService memberService;
 
+  /**
+   * 회원 가입 페이지 로드
+   * @return
+   */
   @GetMapping("/register")
-  public String register() {
+  public String showRegisterForm() {
     return "member/register";
   }
 
   @PostMapping("/register")
   public String register(MemberVO memberVO, RedirectAttributes rttr) {
-
     try {
       memberService.register(memberVO);
+      rttr.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인해주세요.");
       return "redirect:/member/login";
-    } catch (Exception e) { // Exception 하나로 모든 예외를 잡습니다.
-      // 실패 시 로직
+    } catch (Exception e) {
       rttr.addFlashAttribute("errorMessage", e.getMessage());
       return "redirect:/member/register";
     }
   }
 
+  /**
+   * 로그인 페이지 로드
+   * @return
+   */
   @GetMapping("/login")
-  public String login() {
+  public String showLoginForm() {
     return "member/login";
   }
 
   @PostMapping("/login")
-  public String login(HttpSession session, MemberVO memberVO, RedirectAttributes rttr, HttpServletRequest request) throws AccountLockedException {
-
+  public String login(MemberVO memberVO, HttpServletRequest request, HttpSession session, RedirectAttributes rttr) {
     try {
       MemberVO loginMember = memberService.login(memberVO, request);
 
@@ -57,38 +62,42 @@ public class MemberController {
         rttr.addFlashAttribute("errorMessage", "이메일 또는 비밀번호가 일치하지 않습니다.");
         return "redirect:/member/login";
       }
-
     } catch (Exception e) {
+      // 계정 잠김, DB 오류 등 모든 예외 처리
       rttr.addFlashAttribute("errorMessage", e.getMessage());
       return "redirect:/member/login";
     }
-
   }
 
+  /**
+   * 로그아웃
+   * @param session
+   * @return
+   */
+  @GetMapping("/logout")
+  public String logout(HttpSession session) {
+    session.invalidate();
+    return "redirect:/";
+  }
+
+  /**
+   * 비밀번호 찾기
+   * @return
+   */
   @GetMapping("/forgot-password")
-  public String forgotPassword() {
+  public String showForgotPasswordForm() {
     return "member/forgot-password";
   }
 
   @PostMapping("/forgot-password")
   public String forgotPassword(@RequestParam("email") String email, RedirectAttributes rttr) {
-
     boolean isSuccess = memberService.issueTemporaryPassword(email);
-
     if (isSuccess) {
-      // 성공: 로그인 페이지로 리다이렉트하며 성공 메시지 전달
       rttr.addFlashAttribute("successMessage", "임시 비밀번호가 이메일로 발송되었습니다. 메일을 확인해주세요.");
       return "redirect:/member/login";
     } else {
-      // 실패: 다시 비밀번호 찾기 폼으로 리다이렉트하며 실패 메시지 전달
       rttr.addFlashAttribute("errorMessage", "가입되지 않은 이메일이거나, 메일 발송 중 오류가 발생했습니다.");
       return "redirect:/member/forgot-password";
     }
-  }
-
-  @GetMapping("/logout")
-  public String logout(HttpSession session) {
-    session.invalidate();
-    return "redirect:/";
   }
 }

@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -148,5 +151,85 @@ public class MemberServiceImpl implements MemberService {
       }
     }
     return false; // 회원이 존재하지 않음
+  }
+
+  /**
+   * 닉네임 변경 (7일)
+   * @param email
+   * @param nickname
+   * @return
+   * @throws Exception
+   */
+  @Override
+  public MemberVO changeNickname(String email, String nickname) throws Exception {
+    MemberVO member = memberMapper.selectMemberByEmail(email);
+
+    // 멤버가 null일 경우
+    if (member == null) {
+      throw new Exception("존재하지 않는 회원입니다.");
+    }
+
+    System.out.println("=== 닉네임 변경 체크 시작 ===");
+    System.out.println("이메일: " + email);
+    System.out.println("새 닉네임: " + nickname);
+    System.out.println("현재 닉네임: " + member.getNickname());
+
+    // 마지막 닉네임 변경 일자
+    LocalDateTime nicknameChangedAt = member.getNicknameChangedAt();
+    System.out.println("마지막 변경 일시: " + nicknameChangedAt);
+
+    if (nicknameChangedAt != null) {
+      LocalDateTime now = LocalDateTime.now();
+      System.out.println("현재 시간: " + now);
+
+      // 마지막 변경 일자 - 현재 시간 차이 계산
+      Duration duration = Duration.between(nicknameChangedAt, now);
+      long daysDiff = duration.toDays();
+      long hoursDiff = duration.toHours();
+      long minutesDiff = duration.toMinutes();
+
+      System.out.println("시간 차이 - 일: " + daysDiff + ", 시간: " + hoursDiff + ", 분: " + minutesDiff);
+
+      if (daysDiff < 7) {
+        long daysLeft = 7 - daysDiff;
+        System.out.println("변경 불가 - " + daysLeft + "일 남음");
+        throw new Exception("닉네임은 7일에 한 번만 변경할 수 있습니다. (" + daysLeft + "일 남음)");
+      } else {
+        System.out.println("변경 가능 - 7일 경과");
+      }
+    } else {
+      System.out.println("첫 번째 닉네임 변경 - 변경 가능");
+    }
+
+    System.out.println("=== 닉네임 변경 진행 ===");
+
+    // 모든 조건 충족 시
+    System.out.println("updateNickname 호출 전");
+    memberMapper.updateNickname(email, nickname);
+    System.out.println("updateNickname 호출 후");
+
+    // 변경 후 멤버 정보 다시 조회해서 반환
+    MemberVO updatedMember = memberMapper.selectMemberByEmail(email);
+    System.out.println("변경 완료 - 새로운 변경 일시: " + updatedMember.getNicknameChangedAt());
+
+    return updatedMember;
+  }
+
+  /**
+   * 개인 정보 수정
+   * @param memberVO
+   * @return
+   * @throws Exception
+   */
+  @Override
+  public MemberVO updateInfo(MemberVO memberVO) throws Exception {
+
+    memberMapper.updateInfo(memberVO);
+    return memberMapper.selectMemberByEmail(memberVO.getEmail());
+  }
+
+  @Override
+  public void changePassword(String email, String currentPassword, String newPassword) throws Exception {
+
   }
 }
