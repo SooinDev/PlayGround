@@ -71,4 +71,18 @@ public interface MemberMapper {
    * @param memberVO
    */
   void updateInfo(MemberVO memberVO);
+
+  /**
+   * memberId로 회원 정보 조회
+   * @param id
+   * @return
+   */
+  MemberVO selectMemberById(@Param("memberId") Long id);
+
+  /**
+   * 이메일 변경
+   * @param currentEmail
+   * @param newEmail
+   */
+  void updateEmail(@Param("currentEmail") String currentEmail, @Param("newEmail") String newEmail);
 }

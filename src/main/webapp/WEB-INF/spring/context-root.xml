@@ -37,7 +37,6 @@
   <mybatis-spring:scan base-package="com.playground.mapper"/>
   <context:component-scan base-package="com.playground.service"/>
   <context:component-scan base-package="com.playground.service.impl"/>
-  <context:component-scan base-package="com.playground.exception"/>
   <context:component-scan base-package="com.playground.listener"/>
 
 </beans>

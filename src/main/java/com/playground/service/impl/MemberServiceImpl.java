@@ -191,9 +191,7 @@ public class MemberServiceImpl implements MemberService {
     memberMapper.updateNickname(email, nickname);
 
     // 변경 후 멤버 정보 다시 조회해서 반환
-    MemberVO updatedMember = memberMapper.selectMemberByEmail(email);
-
-    return updatedMember;
+    return memberMapper.selectMemberByEmail(email);
   }
 
   /**
@@ -205,8 +203,32 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public MemberVO updateInfo(MemberVO memberVO) throws Exception {
 
+    MemberVO currentMember = memberMapper.selectMemberById(memberVO.getMemberId());
+
+    // DB에서 회원 정보부터 조회
+    if (currentMember == null) {
+      throw new Exception("오류: 현재 회원 정보를 찾을 수 없습니다.");
+    }
+
+    // 이메일 변경 로직: DB의 현재 이메일과 폼으로 받은 이메일이 다른지 확인
+    if (!currentMember.getEmail().equals(memberVO.getEmail())) {
+      // 이메일이 변경 시, 중복 체크 후 변경
+      if (memberMapper.isEmailDuplicated(memberVO.getEmail())) {
+        throw new Exception("이미 사용 중인 이메일입니다.");
+      }
+      changeEmail(currentMember.getEmail(), memberVO.getEmail());
+    }
+
+    // 닉네임 변경 로직: 7일 제한 규칙이 있는 changeNickname 메소드 호출
+    if (!currentMember.getNickname().equals(memberVO.getNickname())) {
+      changeNickname(currentMember.getEmail(), memberVO.getNickname());
+    }
+
+    // 나머지 정보(이름, 연락처, 주소) 업데이트
     memberMapper.updateInfo(memberVO);
-    return memberMapper.selectMemberByEmail(memberVO.getEmail());
+
+    // 모든 변경이 완료된 최신 회원 정보를 반환
+    return memberMapper.selectMemberById(memberVO.getMemberId());
   }
 
   @Override
@@ -222,5 +244,15 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public boolean isNicknameDuplicated(String nickname) {
     return memberMapper.isNicknameDuplicated(nickname);
+  }
+
+  private void changeEmail(String currentEmail, String newEmail) throws Exception {
+    if (currentEmail.equals(newEmail)) {
+      return; // 변경 사항이 없으면 아무것도 하지 않음
+    }
+    if (memberMapper.isEmailDuplicated(newEmail)) {
+      throw new Exception("이미 사용 중인 이메일입니다.");
+    }
+    memberMapper.updateEmail(currentEmail, newEmail);
   }
 }

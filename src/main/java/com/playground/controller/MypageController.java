@@ -29,36 +29,31 @@ public class MypageController {
   }
 
   /**
-   * 프로필 수정
-   * @param memberVO
+   * 프로필 수정 (닉네임, 이메일, 기타 정보)
+   * @param formVO
    * @param session
    * @param rttr
    * @return
    */
-  @PostMapping("/mypage")
-  public String updateProfile(MemberVO memberVO, HttpSession session, RedirectAttributes rttr) {
+  @PostMapping("/mypage") // POST /member/mypage 요청을 처리
+  public String updateProfile(MemberVO formVO, HttpSession session, RedirectAttributes rttr) {
 
     try {
+      // 세션에서 현재 로그인된 사용자의 고유 ID(memberId) 가져오기
       MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
-      String email = loginMember.getEmail();
-      String oldNickname = loginMember.getNickname();
+      formVO.setMemberId(loginMember.getMemberId());
 
-      // VO에 email 정보 추가
-      memberVO.setEmail(email);
+      // 서비스에 모든 정보가 담긴 VO를 전달하여 한 번에 처리
+      // 서비스가 내부적으로 닉네임, 이메일, 기타 정보를 모두 알아서 처리
+      MemberVO updatedMember = memberService.updateInfo(formVO);
 
-      // 닉네임이 변경되었는지 확인
-      if (!oldNickname.equals(memberVO.getNickname())) {
-        // 닉네임 변경 시 changeNickname 서비스 호출
-        memberService.changeNickname(email, memberVO.getNickname());
-      }
+//      System.out.println("### 세션에 갱신할 정보: " + updatedMember);
 
-      MemberVO updatedMember = memberService.updateInfo(memberVO);
-
+      // 세션 정보 최신으로 갱신
       session.setAttribute("loginMember", updatedMember);
       rttr.addFlashAttribute("successMessage", "회원 정보가 성공적으로 수정되었습니다.");
 
     } catch (Exception e) {
-      e.printStackTrace(); // 전체 스택 트레이스 출력
       rttr.addFlashAttribute("errorMessage", e.getMessage());
     }
     return "redirect:/member/mypage";
