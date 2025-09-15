@@ -26,6 +26,12 @@ public class MemberServiceImpl implements MemberService {
   @Autowired
   JavaMailSender mailSender;
 
+  /**
+   * 회원 가입
+   * @param memberVO
+   * @throws EmailDuplicateException
+   * @throws NicknameDuplicateException
+   */
   @Override
   public void register(MemberVO memberVO) throws EmailDuplicateException, NicknameDuplicateException {
 
@@ -48,6 +54,11 @@ public class MemberServiceImpl implements MemberService {
     memberMapper.insertMember(memberVO);
   }
 
+  /**
+   * 로그인
+   * @param memberVO
+   * @return
+   */
   @Override
   public MemberVO login(MemberVO memberVO) {
     MemberVO dbMember = memberMapper.selectMemberByEmail(memberVO.getEmail());
@@ -65,6 +76,11 @@ public class MemberServiceImpl implements MemberService {
     return null;
   }
 
+  /**
+   * 비밀번호 찾기
+   * @param email
+   * @param encodedPassword
+   */
   @Override
   public void forgotPassword(String email, String encodedPassword) {
     MemberVO dbMember = memberMapper.selectMemberByEmail(email);

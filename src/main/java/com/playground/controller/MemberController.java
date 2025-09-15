@@ -77,4 +77,10 @@ public class MemberController {
       return "redirect:/member/forgot-password";
     }
   }
+
+  @GetMapping("/logout")
+  public String logout(HttpSession session) {
+    session.invalidate();
+    return "redirect:/";
+  }
 }
