@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>관리자 대시보드 - PlayGround Admin</title>
-  <link rel="stylesheet" href="<c:url value='/resources/css/admin-dashboard.css'/>">
+  <link rel="stylesheet" href="<c:url value='/resources/css/admin/admin-dashboard.css'/>">
 </head>
 <body>
 <!-- 상단 네비게이션 바 -->
@@ -154,6 +154,6 @@
   </div>
 </main>
 
-<script src="<c:url value='/resources/js/admin-dashboard.js'/>"></script>
+<script src="<c:url value='/resources/js/admin/admin-dashboard.js'/>"></script>
 </body>
 </html>

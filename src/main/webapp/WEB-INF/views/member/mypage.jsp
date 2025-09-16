@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>마이페이지 - PlayGround</title>
-  <link rel="stylesheet" href="<c:url value='/resources/css/mypage.css'/>">
+  <link rel="stylesheet" href="<c:url value='/resources/css/member/mypage.css'/>">
 </head>
 <body>
 <!-- 상단 네비게이션 -->
@@ -279,6 +279,6 @@
   </div>
 </div>
 
-<script src="<c:url value='/resources/js/mypage.js'/>"></script>
+<script src="<c:url value='/resources/js/member/mypage.js'/>"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
-package com.playground.mapper;
+package com.playground.mapper.member;
 
 import com.playground.vo.LoginAttemptVO;
-import com.playground.vo.MemberVO;
+import com.playground.vo.member.MemberVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

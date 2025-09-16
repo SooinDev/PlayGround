@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>비밀번호 찾기 - PlayGround</title>
-  <link rel="stylesheet" href="<c:url value='/resources/css/forgot-password.css'/>">
+  <link rel="stylesheet" href="<c:url value='/resources/css/member/forgot-password.css'/>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
@@ -105,6 +105,6 @@
   </div>
 </div>
 
-<script src="<c:url value='/resources/js/forgot-password.js'/>"></script>
+<script src="<c:url value='/resources/js/member/forgot-password.js'/>"></script>
 </body>
 </html>

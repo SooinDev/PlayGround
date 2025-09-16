@@ -1,6 +1,6 @@
 package com.playground.service;
 
-import com.playground.vo.MemberVO;
+import com.playground.vo.member.MemberVO;
 
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;

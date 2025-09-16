@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>관리자 로그인 - PlayGround Admin</title>
-  <link rel="stylesheet" href="<c:url value='/resources/css/admin-login.css'/>">
+  <link rel="stylesheet" href="<c:url value='/resources/css/admin/admin-login.css'/>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
@@ -147,6 +147,6 @@
   </div>
 </div>
 
-<script src="<c:url value='/resources/js/admin-login.js'/>"></script>
+<script src="<c:url value='/resources/js/admin/admin-login.js'/>"></script>
 </body>
 </html>

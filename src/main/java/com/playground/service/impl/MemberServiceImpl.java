@@ -1,9 +1,9 @@
 package com.playground.service.impl;
 
-import com.playground.mapper.MemberMapper;
+import com.playground.mapper.member.MemberMapper;
 import com.playground.service.MemberService;
 import com.playground.vo.LoginAttemptVO;
-import com.playground.vo.MemberVO;
+import com.playground.vo.member.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

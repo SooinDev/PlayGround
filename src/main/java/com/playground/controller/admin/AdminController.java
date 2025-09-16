@@ -1,7 +1,7 @@
-package com.playground.controller;
+package com.playground.controller.admin;
 
 import com.playground.service.AdminService;
-import com.playground.vo.AdminVO;
+import com.playground.vo.admin.AdminVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

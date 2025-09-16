@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>회원 관리 - PlayGround Admin</title>
-  <link rel="stylesheet" href="<c:url value='/resources/css/member-list.css'/>">
+  <link rel="stylesheet" href="<c:url value='/resources/css/member/member-list.css'/>">
 </head>
 <body>
 <!-- 상단 네비게이션 바 -->
@@ -253,6 +253,6 @@
   </div>
 </div>
 
-<script src="<c:url value='/resources/js/member-list.js'/>"></script>
+<script src="<c:url value='/resources/js/admin/member-list.js'/>"></script>
 </body>
 </html>

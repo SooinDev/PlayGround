@@ -1,6 +1,6 @@
-package com.playground.mapper;
+package com.playground.mapper.admin;
 
-import com.playground.vo.AdminVO;
+import com.playground.vo.admin.AdminVO;
 import com.playground.vo.LoginAttemptVO;
 
 public interface AdminMapper {

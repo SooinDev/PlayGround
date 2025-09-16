@@ -1,5 +1,6 @@
-package com.playground.vo;
+package com.playground.vo.member;
 
+import com.playground.vo.MemberStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
