@@ -145,23 +145,30 @@
         </div>
 
         <!-- 비밀번호 변경 폼 -->
+        <!-- 비밀번호 변경 폼 -->
         <div class="password-form" id="passwordForm" style="display: none;">
           <h3>비밀번호 변경</h3>
           <form action="<c:url value='/member/password/change'/>" method="post">
             <div class="form-group">
               <label for="currentPassword">현재 비밀번호</label>
-              <input type="password" id="currentPassword" name="currentPassword" required>
+              <div class="password-field">
+                <input type="password" id="currentPassword" name="currentPassword" required>
+              </div>
             </div>
 
             <div class="form-group">
               <label for="newPassword">새 비밀번호</label>
-              <input type="password" id="newPassword" name="newPassword" required minlength="8">
-              <div class="password-hint">8자 이상, 영문+숫자+특수문자 조합</div>
+              <div class="password-field">
+                <input type="password" id="newPassword" name="newPassword" required minlength="8">
+              </div>
+              <div class="password-hint">8자 이상, 영문+숫자+특수문자 조합 권장</div>
             </div>
 
             <div class="form-group">
               <label for="confirmPassword">새 비밀번호 확인</label>
-              <input type="password" id="confirmPassword" name="confirmPassword" required>
+              <div class="password-field">
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+              </div>
             </div>
 
             <div class="form-actions">

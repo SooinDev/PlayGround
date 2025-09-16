@@ -152,21 +152,301 @@ function togglePasswordForm() {
   }
 }
 
-// 비밀번호 폼 초기화
+// 비밀번호 폼 초기화 함수
 function initPasswordForm() {
   const newPassword = document.getElementById('newPassword');
   const confirmPassword = document.getElementById('confirmPassword');
+  const currentPassword = document.getElementById('currentPassword');
 
-  if (confirmPassword && newPassword) {
-    confirmPassword.addEventListener('input', function() {
-      if (newPassword.value && this.value !== newPassword.value) {
-        this.style.borderColor = '#ef4444';
-        showFieldError(this, '비밀번호가 일치하지 않습니다.');
+  // 새 비밀번호 입력 시 강도 검사 및 실시간 유효성 검사
+  if (newPassword) {
+    // 비밀번호 강도 표시 요소 생성
+    const strengthContainer = createPasswordStrengthIndicator();
+    newPassword.parentNode.appendChild(strengthContainer);
+
+    newPassword.addEventListener('input', function() {
+      const password = this.value;
+
+      if (password.length > 0) {
+        strengthContainer.style.display = 'block';
+        updatePasswordStrength(password, strengthContainer);
+        validateNewPasswordStrength(this);
       } else {
-        this.style.borderColor = '#22c55e';
-        hideFieldError(this);
+        strengthContainer.style.display = 'none';
+        this.style.borderColor = '#e5e7eb';
+        this.setCustomValidity('');
+      }
+
+      // 비밀번호 확인란이 비어있지 않으면 다시 검사
+      if (confirmPassword && confirmPassword.value) {
+        validatePasswordMatch();
       }
     });
+
+    // 비밀번호 보기/숨기기 토글 추가
+    addPasswordToggle(newPassword);
+  }
+
+  // 비밀번호 확인 실시간 검사
+  if (confirmPassword && newPassword) {
+    confirmPassword.addEventListener('input', function() {
+      validatePasswordMatch();
+    });
+
+    // 비밀번호 확인란에도 토글 추가
+    addPasswordToggle(confirmPassword);
+  }
+
+  // 현재 비밀번호에도 토글 추가
+  if (currentPassword) {
+    addPasswordToggle(currentPassword);
+  }
+
+  // 폼 제출 시 최종 검증
+  const passwordForm = document.querySelector('#passwordForm form');
+  if (passwordForm) {
+    passwordForm.addEventListener('submit', function(e) {
+      if (!validatePasswordForm()) {
+        e.preventDefault();
+        showNotification('비밀번호 입력 정보를 확인해주세요.', 'error');
+      }
+    });
+  }
+}
+
+// 비밀번호 강도 표시기 생성
+function createPasswordStrengthIndicator() {
+  const container = document.createElement('div');
+  container.className = 'password-strength';
+  container.style.cssText = `
+    margin-top: 8px;
+    display: none;
+  `;
+
+  container.innerHTML = `
+    <div class="strength-bar" style="
+      width: 100%;
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    ">
+      <div class="strength-fill" style="
+        height: 100%;
+        width: 0%;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      "></div>
+    </div>
+    <div class="strength-text" style="
+      font-size: 12px;
+      color: #6b7280;
+    ">비밀번호 강도</div>
+  `;
+
+  return container;
+}
+
+// 비밀번호 강도 업데이트
+function updatePasswordStrength(password, container) {
+  const strengthFill = container.querySelector('.strength-fill');
+  const strengthText = container.querySelector('.strength-text');
+
+  if (!strengthFill || !strengthText) return;
+
+  let score = 0;
+  let feedback = '';
+
+  // 길이 검사
+  if (password.length >= 8) score += 1;
+  if (password.length >= 12) score += 1;
+
+  // 문자 종류 검사
+  if (/[a-z]/.test(password)) score += 1;
+  if (/[A-Z]/.test(password)) score += 1;
+  if (/[0-9]/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+  // 강도 분류 및 스타일 적용
+  strengthFill.className = 'strength-fill';
+
+  if (score <= 2) {
+    strengthFill.style.width = '25%';
+    strengthFill.style.background = '#ef4444';
+    feedback = '약함 - 더 강한 비밀번호를 사용하세요';
+  } else if (score <= 3) {
+    strengthFill.style.width = '50%';
+    strengthFill.style.background = '#f59e0b';
+    feedback = '보통 - 특수문자를 추가해보세요';
+  } else if (score <= 4) {
+    strengthFill.style.width = '75%';
+    strengthFill.style.background = '#3b82f6';
+    feedback = '좋음 - 안전한 비밀번호입니다';
+  } else {
+    strengthFill.style.width = '100%';
+    strengthFill.style.background = '#10b981';
+    feedback = '매우 강함 - 훌륭한 비밀번호입니다';
+  }
+
+  strengthText.textContent = feedback;
+}
+
+// 새 비밀번호 강도 유효성 검사
+function validateNewPasswordStrength(input) {
+  const password = input.value;
+
+  if (password.length < 8) {
+    input.style.borderColor = '#ef4444';
+    input.setCustomValidity('비밀번호는 최소 8자 이상이어야 합니다.');
+    return false;
+  }
+
+  if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+    input.style.borderColor = '#f59e0b';
+    input.setCustomValidity('비밀번호는 영문자와 숫자를 포함해야 합니다.');
+    return false;
+  }
+
+  input.style.borderColor = '#10b981';
+  input.setCustomValidity('');
+  return true;
+}
+
+// 비밀번호 확인 검사 (기존 함수 개선)
+function validatePasswordMatch() {
+  const newPassword = document.getElementById('newPassword');
+  const confirmPassword = document.getElementById('confirmPassword');
+
+  if (!newPassword || !confirmPassword) return false;
+
+  const password = newPassword.value;
+  const confirmPass = confirmPassword.value;
+
+  if (confirmPass && password !== confirmPass) {
+    confirmPassword.style.borderColor = '#ef4444';
+    confirmPassword.setCustomValidity('비밀번호가 일치하지 않습니다.');
+    showFieldError(confirmPassword, '비밀번호가 일치하지 않습니다.');
+    return false;
+  } else if (confirmPass && password === confirmPass) {
+    confirmPassword.style.borderColor = '#10b981';
+    confirmPassword.setCustomValidity('');
+    hideFieldError(confirmPassword);
+    return true;
+  } else {
+    confirmPassword.style.borderColor = '#e5e7eb';
+    confirmPassword.setCustomValidity('');
+    hideFieldError(confirmPassword);
+    return true;
+  }
+}
+
+// 비밀번호 토글 기능 추가
+function addPasswordToggle(passwordInput) {
+  // 이미 토글이 있는지 확인
+  if (passwordInput.parentNode.querySelector('.password-toggle')) {
+    return;
+  }
+
+  // 부모 요소를 relative로 설정
+  passwordInput.parentNode.style.position = 'relative';
+
+  // 토글 버튼 생성
+  const toggleBtn = document.createElement('button');
+  toggleBtn.type = 'button';
+  toggleBtn.className = 'password-toggle';
+  toggleBtn.innerHTML = '<span class="toggle-icon">👁</span>';
+  toggleBtn.style.cssText = `
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+  `;
+
+  toggleBtn.addEventListener('mouseenter', function() {
+    this.style.opacity = '1';
+  });
+
+  toggleBtn.addEventListener('mouseleave', function() {
+    this.style.opacity = '0.6';
+  });
+
+  toggleBtn.addEventListener('click', function() {
+    const isPassword = passwordInput.type === 'password';
+    const icon = this.querySelector('.toggle-icon');
+
+    passwordInput.type = isPassword ? 'text' : 'password';
+    icon.textContent = isPassword ? '🙈' : '👁';
+
+    // 포커스 유지
+    passwordInput.focus();
+    const length = passwordInput.value.length;
+    passwordInput.setSelectionRange(length, length);
+  });
+
+  passwordInput.parentNode.appendChild(toggleBtn);
+
+  // 인풋에 패딩 추가
+  passwordInput.style.paddingRight = '48px';
+}
+
+// 비밀번호 폼 전체 유효성 검사
+function validatePasswordForm() {
+  const currentPassword = document.getElementById('currentPassword');
+  const newPassword = document.getElementById('newPassword');
+  const confirmPassword = document.getElementById('confirmPassword');
+
+  let isValid = true;
+
+  // 현재 비밀번호 확인
+  if (!currentPassword || !currentPassword.value.trim()) {
+    if (currentPassword) {
+      currentPassword.style.borderColor = '#ef4444';
+      showFieldError(currentPassword, '현재 비밀번호를 입력해주세요.');
+    }
+    isValid = false;
+  }
+
+  // 새 비밀번호 강도 검사
+  if (!newPassword || !validateNewPasswordStrength(newPassword)) {
+    isValid = false;
+  }
+
+  // 비밀번호 확인 검사
+  if (!validatePasswordMatch()) {
+    isValid = false;
+  }
+
+  return isValid;
+}
+
+// 비밀번호 변경 성공 시 폼 리셋
+function resetPasswordForm() {
+  const passwordForm = document.querySelector('#passwordForm form');
+  if (passwordForm) {
+    passwordForm.reset();
+
+    // 모든 필드 스타일 초기화
+    const inputs = passwordForm.querySelectorAll('input[type="password"]');
+    inputs.forEach(input => {
+      input.style.borderColor = '#e5e7eb';
+      input.setCustomValidity('');
+      hideFieldError(input);
+    });
+
+    // 강도 표시기 숨기기
+    const strengthContainer = passwordForm.querySelector('.password-strength');
+    if (strengthContainer) {
+      strengthContainer.style.display = 'none';
+    }
   }
 }
 
