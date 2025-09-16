@@ -12,7 +12,6 @@
 </head>
 <body>
 <div class="login-container">
-  <!-- 왼쪽 일러스트레이션 영역 -->
   <div class="illustration-panel">
     <div class="illustration-content">
       <div class="floating-elements">
@@ -49,7 +48,6 @@
     </div>
   </div>
 
-  <!-- 오른쪽 로그인 폼 영역 -->
   <div class="form-panel">
     <div class="form-content">
       <div class="brand-header">

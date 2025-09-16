@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.playground.mapper.AdminMapper">
+
+  <resultMap id="adminResultMap" type="com.playground.vo.AdminVO">
+    <id property="adminId" column="admin_id"/>
+    <result property="adminEmail" column="email"/>
+    <result property="adminPassword" column="password"/>
+    <result property="adminNickname" column="nickname"/>
+    <result property="adminNicknameChangedAt" column="nickname_changed_at"/>
+    <result property="adminStatus" column="status" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+    <result property="adminCreatedAt" column="created_at"/>
+    <result property="adminUpdatedAt" column="updated_at"/>
+  </resultMap>
+
+  <select id="selectAdminByEmail" resultMap="adminResultMap">
+    SELECT * FROM admin WHERE email = #{email}
+  </select>
+
+  <select id="countRecentLoginFailures" parameterType="string" resultType="int">
+    SELECT COUNT(*)
+    FROM login_attempt
+    WHERE email = #{email}
+      AND success = false
+      AND attempt_type = 'ADMIN' AND attempted_at > NOW() - INTERVAL 10 MINUTE
+  </select>
+
+  <insert id="insertLoginAttempt" parameterType="com.playground.vo.LoginAttemptVO">
+    INSERT INTO login_attempt (email, ip_address, success, attempt_type)
+    VALUES (#{email}, #{ipAddress}, #{success}, 'ADMIN') </insert>
+
+  <delete id="deleteLoginAttempts" parameterType="string">
+    DELETE FROM login_attempt
+    WHERE email = #{email}
+      AND attempt_type = 'ADMIN' </delete>
+
+</mapper>

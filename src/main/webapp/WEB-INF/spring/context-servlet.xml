@@ -20,9 +20,14 @@
 
   <mvc:interceptors>
     <mvc:interceptor>
-      <mvc:mapping path="/mypage/**"/>
-
+      <mvc:mapping path="/member/mypage/**"/>
       <bean class="com.playground.interceptor.LoginCheckInterceptor"/>
+    </mvc:interceptor>
+
+    <mvc:interceptor>
+      <mvc:mapping path="/admin/**"/>
+      <mvc:exclude-mapping path="/admin/login"/>
+      <bean class="com.playground.interceptor.AdminCheckInterceptor"/>
     </mvc:interceptor>
   </mvc:interceptors>
 

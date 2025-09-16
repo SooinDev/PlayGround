@@ -48,3 +48,11 @@ CREATE TABLE IF NOT EXISTS login_attempt (
                                              INDEX idx_ip_email (ip_address, email),
                                              INDEX idx_attempted_at (attempted_at)
 );
+
+INSERT INTO admin (email, password, nickname, status)
+VALUES (
+           'email@example.com',
+           'ENCODEDPASSWORD',
+           '관리자',
+           'ACTIVE'
+       );
