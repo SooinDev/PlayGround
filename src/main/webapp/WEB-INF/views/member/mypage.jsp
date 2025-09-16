@@ -147,7 +147,7 @@
         <!-- 비밀번호 변경 폼 -->
         <div class="password-form" id="passwordForm" style="display: none;">
           <h3>비밀번호 변경</h3>
-          <form action="<c:url value='/member/mypage/password/change'/>" method="post">
+          <form action="<c:url value='/member/password/change'/>" method="post">
             <div class="form-group">
               <label for="currentPassword">현재 비밀번호</label>
               <input type="password" id="currentPassword" name="currentPassword" required>

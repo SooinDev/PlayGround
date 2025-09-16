@@ -75,6 +75,10 @@ public interface MemberService {
    */
   boolean isNicknameDuplicated(String nickname);
 
-
+  /**
+   * 고유 번호로 회원 조회
+   * @param memberId
+   * @return
+   */
   MemberVO getMemberById(Long memberId);
 }

@@ -241,6 +241,21 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public void changePassword(String email, String currentPassword, String newPassword) throws Exception {
 
+    MemberVO memberVO = memberMapper.selectMemberByEmail(email);
+
+    // 조회된 멤버의 비밀번호와 입력된 비밀번호가 같을 때
+    if (passwordEncoder.matches(currentPassword, memberVO.getPassword())) {
+
+      // 새 비밀번호가 기존 비밀번호와 같을 때
+      if (currentPassword.equals(newPassword)) {
+        throw new Exception("이미 사용 중인 비밀번호입니다.");
+      }
+
+      // 입력된 비밀번호를 인코딩해서 업데이트
+      String encodedPassword = passwordEncoder.encode(newPassword);
+
+      memberMapper.updatePassword(email, encodedPassword);
+    }
   }
 
   @Override

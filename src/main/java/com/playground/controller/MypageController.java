@@ -75,7 +75,7 @@ public class MypageController {
 
     if (!newPassword.equals(confirmPassword)) {
       rttr.addFlashAttribute("errorMessage", "새 비밀번호가 일치하지 않습니다.");
-      return "redirect:/mypage";
+      return "redirect:/member/mypage";
     }
 
     MemberVO loginMember = (MemberVO) session.getAttribute("loginMember");
@@ -91,7 +91,7 @@ public class MypageController {
 
     } catch (Exception e) {
       rttr.addFlashAttribute("errorMessage", e.getMessage());
-      return "redirect:/mypage";
+      return "redirect:/member/mypage";
     }
   }
 }
