@@ -21,6 +21,13 @@
   <mvc:interceptors>
     <mvc:interceptor>
       <mvc:mapping path="/member/mypage/**"/>
+
+      <mvc:mapping path="/posts/new"/>
+      <mvc:mapping path="/posts/create"/>
+      <mvc:mapping path="/posts/update"/>
+      <mvc:mapping path="/posts/*/edit"/>
+      <mvc:mapping path="/posts/*/delete"/>
+
       <bean class="com.playground.interceptor.LoginCheckInterceptor"/>
     </mvc:interceptor>
 
@@ -32,4 +39,3 @@
   </mvc:interceptors>
 
 </beans>
-
