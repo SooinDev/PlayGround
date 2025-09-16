@@ -92,7 +92,7 @@ body {
 
 .nav-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .nav-btn {
@@ -105,6 +105,16 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.nav-btn-posts {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.nav-btn-posts:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
 }
 
 .nav-btn-primary {
@@ -232,24 +242,37 @@ body:has(.top-navbar) .hero-section {
 }
 
 .btn-primary {
-  background: #007aff;
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
 }
 
 .btn-primary:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+  background: #007aff;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+}
+
+.btn-secondary:hover {
   background: #0056cc;
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(0, 122, 255, 0.4);
 }
 
-.btn-secondary {
+.btn-outline {
   background: rgba(255, 255, 255, 0.1);
   color: #f5f5f7;
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(20px);
 }
 
-.btn-secondary:hover {
+.btn-outline:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(255, 255, 255, 0.1);
@@ -284,6 +307,11 @@ body:has(.top-navbar) .hero-section {
   box-shadow: 0 8px 32px rgba(0, 122, 255, 0.2);
 }
 
+.action-card[data-href*="/posts"]:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+}
+
 .action-icon {
   font-size: 32px;
   margin-bottom: 16px;
@@ -312,8 +340,16 @@ body:has(.top-navbar) .hero-section {
   transition: color 0.3s ease;
 }
 
+.action-card[data-href*="/posts"] .action-link {
+  color: #10b981;
+}
+
 .action-link:hover {
   color: #5ac8fa;
+}
+
+.action-card[data-href*="/posts"] .action-link:hover {
+  color: #34d399;
 }
 
 /* 기능 섹션 */
@@ -400,6 +436,10 @@ body:has(.top-navbar) .hero-section {
   padding: 40px 20px;
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer a:hover {
+  color: #007aff;
 }
 
 /* 네비게이션 도트 */
@@ -541,12 +581,16 @@ body:has(.top-navbar) .hero-section {
   }
 
   .nav-buttons {
-    gap: 8px;
+    gap: 6px;
   }
 
   .nav-btn {
-    padding: 8px 12px;
-    font-size: 12px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .nav-btn .btn-icon {
+    font-size: 10px;
   }
 
   .brand-logo {
@@ -649,7 +693,28 @@ body:has(.top-navbar) .hero-section {
 
 /* 포커스 표시 개선 */
 .btn:focus-visible,
-.nav-btn:focus-visible {
+.nav-btn:focus-visible,
+.action-card:focus-visible {
   outline: 2px solid #007aff;
   outline-offset: 2px;
+}
+
+/* 게시판 관련 특별 스타일 */
+.posts-highlight {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* 게시판 버튼 펄스 애니메이션 */
+@keyframes pulse-posts {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(16, 185, 129, 0.5);
+  }
+}
+
+.btn-primary:hover {
+  animation: pulse-posts 2s infinite;
 }

@@ -39,13 +39,13 @@ public class MemberServiceImpl implements MemberService {
 
     // 1. 이메일 중복 체크
     if (memberMapper.isEmailDuplicated(memberVO.getEmail())) {
-      // 사용자 정의 예외 대신 일반 Exception을 사용합니다.
+      // 사용자 정의 예외 대신 일반 Exception 사용
       throw new Exception("이미 사용 중인 이메일입니다.");
     }
 
     // 2. 닉네임 중복 체크
     if (memberMapper.isNicknameDuplicated(memberVO.getNickname())) {
-      // 여기도 일반 Exception을 사용합니다.
+      // 일반 Exception 사용
       throw new Exception("이미 사용 중인 닉네임입니다.");
     }
 

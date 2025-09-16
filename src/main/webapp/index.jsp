@@ -24,14 +24,21 @@
           <span class="username">${sessionScope.loginMember.nickname}님</span>
         </div>
         <div class="nav-buttons">
+          <a href="<c:url value='/posts'/>" class="nav-btn nav-btn-posts">
+            <span class="btn-icon">📝</span>
+            게시판
+          </a>
           <a href="<c:url value='/dashboard'/>" class="nav-btn nav-btn-primary">
-            <span class="btn-icon">대시보드</span>
+            <span class="btn-icon">📊</span>
+            대시보드
           </a>
           <a href="<c:url value='/member/mypage'/>" class="nav-btn nav-btn-secondary">
-            <span class="btn-icon">마이페이지</span>
+            <span class="btn-icon">⚙️</span>
+            마이페이지
           </a>
           <a href="<c:url value='/member/logout'/>" class="nav-btn nav-btn-logout">
-            <span class="btn-icon">로그아웃</span>
+            <span class="btn-icon">🚪</span>
+            로그아웃
           </a>
         </div>
       </div>
@@ -63,33 +70,39 @@
         PlayGround에서 더 많은 것들을 경험해보세요.
       </p>
       <div class="cta-buttons">
-        <a href="<c:url value='/dashboard'/>" class="btn btn-primary">
-          <span class="btn-icon">대시보드 바로가기</span>
+        <a href="<c:url value='/posts'/>" class="btn btn-primary">
+          <span class="btn-icon">📝</span>
+          게시판 바로가기
         </a>
-        <a href="<c:url value='/member/mypage'/>" class="btn btn-secondary">
-          <span class="btn-icon">내 프로필</span>
+        <a href="<c:url value='/dashboard'/>" class="btn btn-secondary">
+          <span class="btn-icon">📊</span>
+          대시보드
+        </a>
+        <a href="<c:url value='/member/mypage'/>" class="btn btn-outline">
+          <span class="btn-icon">⚙️</span>
+          내 프로필
         </a>
       </div>
 
       <!-- 로그인 사용자를 위한 빠른 액션 카드 -->
       <div class="quick-actions">
-        <div class="action-card">
+        <div class="action-card" data-href="<c:url value='/posts'/>">
+          <div class="action-icon">📝</div>
+          <h3>게시판</h3>
+          <p>다른 회원들과 소통하고 정보를 공유하세요</p>
+          <a href="<c:url value='/posts'/>" class="action-link">게시글 보기 →</a>
+        </div>
+        <div class="action-card" data-href="<c:url value='/dashboard'/>">
           <div class="action-icon">📈</div>
           <h3>대시보드</h3>
           <p>나의 활동 내역을 확인하세요</p>
           <a href="<c:url value='/dashboard'/>" class="action-link">보러가기 →</a>
         </div>
-        <div class="action-card">
+        <div class="action-card" data-href="<c:url value='/member/mypage'/>">
           <div class="action-icon">⚙️</div>
           <h3>계정 설정</h3>
           <p>프로필과 설정을 관리하세요</p>
           <a href="<c:url value='/member/mypage'/>" class="action-link">설정하기 →</a>
-        </div>
-        <div class="action-card">
-          <div class="action-icon">🌟</div>
-          <h3>새로운 기능</h3>
-          <p>최신 업데이트를 확인하세요</p>
-          <a href="#features" class="action-link">둘러보기 →</a>
         </div>
       </div>
     </c:when>
@@ -101,11 +114,39 @@
       </p>
       <div class="cta-buttons">
         <a href="<c:url value='/member/register'/>" class="btn btn-primary">
+          <span class="btn-icon">🚀</span>
           회원가입
         </a>
         <a href="<c:url value='/member/login'/>" class="btn btn-secondary">
+          <span class="btn-icon">🔑</span>
           로그인
         </a>
+        <a href="<c:url value='/posts'/>" class="btn btn-outline">
+          <span class="btn-icon">📝</span>
+          게시판 둘러보기
+        </a>
+      </div>
+
+      <!-- 로그인하지 않은 사용자를 위한 기능 소개 카드 -->
+      <div class="quick-actions">
+        <div class="action-card" data-href="<c:url value='/posts'/>">
+          <div class="action-icon">📝</div>
+          <h3>게시판</h3>
+          <p>다양한 주제의 게시글을 둘러보세요</p>
+          <a href="<c:url value='/posts'/>" class="action-link">게시글 보기 →</a>
+        </div>
+        <div class="action-card" data-href="<c:url value='/member/register'/>">
+          <div class="action-icon">🚀</div>
+          <h3>회원가입</h3>
+          <p>PlayGround의 모든 기능을 이용하세요</p>
+          <a href="<c:url value='/member/register'/>" class="action-link">가입하기 →</a>
+        </div>
+        <div class="action-card" data-href="#features">
+          <div class="action-icon">🌟</div>
+          <h3>기능 소개</h3>
+          <p>PlayGround의 특별한 기능들을 확인하세요</p>
+          <a href="#features" class="action-link">둘러보기 →</a>
+        </div>
       </div>
     </c:otherwise>
   </c:choose>
@@ -142,6 +183,30 @@
           사용자 친화적인 인터페이스로 누구나 쉽게 이용할 수 있습니다.
         </p>
       </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h3 class="feature-title">활발한 커뮤니티</h3>
+        <p class="feature-description">
+          다양한 주제의 게시글을 통해 다른 사용자들과 소통하고 정보를 공유하세요.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">개인화된 대시보드</h3>
+        <p class="feature-description">
+          나만의 활동 현황과 통계를 한눈에 확인할 수 있는 맞춤형 대시보드를 제공합니다.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3 class="feature-title">언제 어디서나</h3>
+        <p class="feature-description">
+          모바일과 데스크톱 모든 환경에서 최적화된 반응형 디자인을 경험하세요.
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -150,6 +215,7 @@
   <div class="container">
     <p>&copy; 2025 PlayGround. 모든 권리 보유.</p>
     <p style="margin-top: 8px; font-size: 15px;">
+      <a href="<c:url value='/posts'/>" style="color: #007aff; text-decoration: none;">게시판</a> |
       개인정보보호정책 | 이용약관 | 고객지원
     </p>
   </div>

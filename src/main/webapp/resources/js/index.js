@@ -25,7 +25,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 빠른 액션 카드 애니메이션
   initQuickActions();
+
+  // 게시판 버튼 특별 처리
+  initPostsButtons();
 });
+
+// 게시판 버튼 특별 처리
+function initPostsButtons() {
+  const postsButtons = document.querySelectorAll('a[href*="/posts"]');
+
+  postsButtons.forEach(button => {
+    // 게시판 버튼에 특별한 스타일 적용
+    if (button.classList.contains('btn-primary')) {
+      button.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      button.style.boxShadow = '0 4px 20px rgba(16, 185, 129, 0.3)';
+    }
+
+    // 클릭 시 로딩 효과
+    button.addEventListener('click', function(e) {
+      // 로딩 상태 표시
+      const originalText = this.innerHTML;
+      this.innerHTML = '<span class="btn-icon">📝</span> 게시판 로딩 중...';
+      this.style.pointerEvents = 'none';
+
+      // 약간의 딜레이 후 이동 (UX 개선)
+      setTimeout(() => {
+        window.location.href = this.href;
+      }, 300);
+    });
+
+    // 호버 시 추가 효과
+    button.addEventListener('mouseenter', function() {
+      if (this.classList.contains('btn-primary')) {
+        this.style.transform = 'translateY(-3px) scale(1.02)';
+        this.style.boxShadow = '0 8px 30px rgba(16, 185, 129, 0.4)';
+      }
+    });
+
+    button.addEventListener('mouseleave', function() {
+      if (this.classList.contains('btn-primary')) {
+        this.style.transform = 'translateY(-2px) scale(1)';
+        this.style.boxShadow = '0 4px 20px rgba(16, 185, 129, 0.3)';
+      }
+    });
+  });
+
+  // 게시판 액션 카드 특별 처리
+  const postsActionCard = document.querySelector('.action-card[data-href*="/posts"]');
+  if (postsActionCard) {
+    postsActionCard.addEventListener('mouseenter', function() {
+      this.style.background = 'rgba(16, 185, 129, 0.1)';
+      this.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+      this.style.transform = 'translateY(-6px) scale(1.02)';
+    });
+
+    postsActionCard.addEventListener('mouseleave', function() {
+      this.style.background = 'rgba(255, 255, 255, 0.05)';
+      this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      this.style.transform = 'translateY(0) scale(1)';
+    });
+  }
+}
 
 // 환영 메시지 관리
 function initWelcomeMessage() {
@@ -92,6 +152,20 @@ function initTopNavigation() {
         }
       }
 
+      // 게시판 버튼 클릭 시 특별 처리
+      if (this.classList.contains('nav-btn-posts')) {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<span class="btn-icon">📝</span> 이동 중...';
+        this.style.pointerEvents = 'none';
+
+        setTimeout(() => {
+          window.location.href = this.href;
+        }, 200);
+
+        e.preventDefault();
+        return false;
+      }
+
       // 클릭 애니메이션
       this.style.transform = 'scale(0.95)';
       setTimeout(() => {
@@ -121,27 +195,64 @@ function initQuickActions() {
 
     // 마우스 이벤트
     card.addEventListener('mouseenter', function() {
-      this.style.transform = 'translateY(-8px) scale(1.02)';
+      if (this.dataset.href && this.dataset.href.includes('/posts')) {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+        this.style.background = 'rgba(16, 185, 129, 0.1)';
+        this.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+      } else {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+      }
     });
 
     card.addEventListener('mouseleave', function() {
       this.style.transform = 'translateY(0) scale(1)';
+      if (this.dataset.href && this.dataset.href.includes('/posts')) {
+        this.style.background = 'rgba(255, 255, 255, 0.05)';
+        this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      }
     });
 
     // 카드 클릭 시 해당 링크로 이동
-    card.addEventListener('click', function() {
-      const actionLink = this.querySelector('.action-link');
-      if (actionLink) {
-        if (actionLink.getAttribute('href').startsWith('#')) {
-          // 앵커 링크인 경우 부드러운 스크롤
-          const targetId = actionLink.getAttribute('href').substring(1);
-          const targetElement = document.getElementById(targetId);
-          if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth' });
+    card.addEventListener('click', function(e) {
+      // 링크 클릭이 아닌 카드 자체 클릭일 때만 처리
+      if (e.target === this || e.target.closest('.action-card') === this) {
+        const actionLink = this.querySelector('.action-link');
+        if (actionLink) {
+          e.preventDefault();
+
+          // 게시판 카드 클릭 시 특별 효과
+          if (this.dataset.href && this.dataset.href.includes('/posts')) {
+            this.style.background = 'rgba(16, 185, 129, 0.2)';
+            this.style.transform = 'scale(0.98)';
+
+            setTimeout(() => {
+              if (actionLink.getAttribute('href').startsWith('#')) {
+                // 앵커 링크인 경우 부드러운 스크롤
+                const targetId = actionLink.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                  targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+              } else {
+                // 일반 링크인 경우 페이지 이동
+                showNotification('게시판으로 이동 중...', 'info', 1000);
+                setTimeout(() => {
+                  window.location.href = actionLink.getAttribute('href');
+                }, 200);
+              }
+            }, 150);
+          } else {
+            // 다른 카드들의 일반적인 처리
+            if (actionLink.getAttribute('href').startsWith('#')) {
+              const targetId = actionLink.getAttribute('href').substring(1);
+              const targetElement = document.getElementById(targetId);
+              if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+              }
+            } else {
+              window.location.href = actionLink.getAttribute('href');
+            }
           }
-        } else {
-          // 일반 링크인 경우 페이지 이동
-          window.location.href = actionLink.getAttribute('href');
         }
       }
     });
@@ -256,12 +367,20 @@ function initButtonEffects() {
   buttons.forEach(button => {
     // 마우스 엔터 효과
     button.addEventListener('mouseenter', function() {
-      this.style.transform = 'translateY(-2px) scale(1.02)';
+      if (this.href && this.href.includes('/posts')) {
+        this.style.transform = 'translateY(-3px) scale(1.02)';
+        this.style.boxShadow = '0 8px 30px rgba(16, 185, 129, 0.4)';
+      } else {
+        this.style.transform = 'translateY(-2px) scale(1.02)';
+      }
     });
 
     // 마우스 리브 효과
     button.addEventListener('mouseleave', function() {
       this.style.transform = 'translateY(0) scale(1)';
+      if (this.href && this.href.includes('/posts')) {
+        this.style.boxShadow = '0 4px 20px rgba(16, 185, 129, 0.3)';
+      }
     });
 
     // 클릭 효과
@@ -270,13 +389,28 @@ function initButtonEffects() {
     });
 
     button.addEventListener('mouseup', function() {
-      this.style.transform = 'translateY(-2px) scale(1.02)';
+      if (this.href && this.href.includes('/posts')) {
+        this.style.transform = 'translateY(-3px) scale(1.02)';
+      } else {
+        this.style.transform = 'translateY(-2px) scale(1.02)';
+      }
     });
   });
 }
 
 // 키보드 네비게이션 지원
 document.addEventListener('keydown', function(e) {
+  // P 키로 게시판 바로가기
+  if (e.key === 'p' || e.key === 'P') {
+    if (!e.target.closest('input, textarea')) {
+      e.preventDefault();
+      showNotification('게시판으로 이동합니다...', 'info', 1000);
+      setTimeout(() => {
+        window.location.href = '/posts';
+      }, 300);
+    }
+  }
+
   // 스페이스바로 스크롤
   if (e.code === 'Space' && !e.target.closest('input, textarea')) {
     e.preventDefault();
@@ -370,6 +504,7 @@ function showNotification(message, type = 'info', duration = 3000) {
     transition: transform 0.3s ease;
     max-width: 320px;
     word-wrap: break-word;
+    backdrop-filter: blur(10px);
   `;
 
   // 타입별 배경색 설정
@@ -384,7 +519,7 @@ function showNotification(message, type = 'info', duration = 3000) {
       notification.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
       break;
     default:
-      notification.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+      notification.style.background = 'linear-gradient(135deg, #10b981, #059669)';
   }
 
   notification.textContent = message;
@@ -420,7 +555,12 @@ window.addEventListener('load', function() {
   const isLoggedIn = document.querySelector('.top-navbar');
   if (!isLoggedIn) {
     setTimeout(() => {
-      showNotification('PlayGround에 오신 것을 환영합니다! 🎉', 'info', 4000);
+      showNotification('PlayGround에 오신 것을 환영합니다! 🎉\nP키를 눌러 게시판으로 바로 이동하세요!', 'info', 5000);
     }, 2000);
+  } else {
+    // 로그인한 사용자에게 단축키 안내
+    setTimeout(() => {
+      showNotification('P키를 눌러 게시판으로 빠르게 이동할 수 있습니다! 📝', 'info', 4000);
+    }, 3000);
   }
 });
