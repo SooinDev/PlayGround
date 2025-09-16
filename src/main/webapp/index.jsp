@@ -25,16 +25,13 @@
         </div>
         <div class="nav-buttons">
           <a href="<c:url value='/dashboard'/>" class="nav-btn nav-btn-primary">
-            <span class="btn-icon">📊</span>
-            대시보드
+            <span class="btn-icon">대시보드</span>
           </a>
           <a href="<c:url value='/member/mypage'/>" class="nav-btn nav-btn-secondary">
-            <span class="btn-icon">👤</span>
-            마이페이지
+            <span class="btn-icon">마이페이지</span>
           </a>
           <a href="<c:url value='/member/logout'/>" class="nav-btn nav-btn-logout">
-            <span class="btn-icon">🚪</span>
-            로그아웃
+            <span class="btn-icon">로그아웃</span>
           </a>
         </div>
       </div>
@@ -67,12 +64,10 @@
       </p>
       <div class="cta-buttons">
         <a href="<c:url value='/dashboard'/>" class="btn btn-primary">
-          <span class="btn-icon">📊</span>
-          대시보드 바로가기
+          <span class="btn-icon">대시보드 바로가기</span>
         </a>
         <a href="<c:url value='/member/mypage'/>" class="btn btn-secondary">
-          <span class="btn-icon">👤</span>
-          내 프로필
+          <span class="btn-icon">내 프로필</span>
         </a>
       </div>
 
