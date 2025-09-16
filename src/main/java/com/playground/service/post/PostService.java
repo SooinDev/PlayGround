@@ -1,6 +1,6 @@
-package com.playground.service;
+package com.playground.service.post;
 
-import com.playground.vo.PostVO;
+import com.playground.vo.post.PostVO;
 
 import java.util.Map;
 

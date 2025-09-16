@@ -1,4 +1,4 @@
-package com.playground.vo;
+package com.playground.vo.post;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.playground.service;
+package com.playground.service.admin;
 
 import com.playground.vo.admin.AdminVO;
 

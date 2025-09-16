@@ -1,8 +1,8 @@
-package com.playground.controller;
+package com.playground.controller.post;
 
-import com.playground.service.PostService;
+import com.playground.service.post.PostService;
 import com.playground.vo.member.MemberVO;
-import com.playground.vo.PostVO;
+import com.playground.vo.post.PostVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

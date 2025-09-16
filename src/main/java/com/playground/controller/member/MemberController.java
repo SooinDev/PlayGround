@@ -1,6 +1,6 @@
 package com.playground.controller.member;
 
-import com.playground.service.MemberService;
+import com.playground.service.member.MemberService;
 import com.playground.vo.member.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

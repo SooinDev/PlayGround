@@ -1,6 +1,6 @@
 package com.playground.mapper;
 
-import com.playground.vo.PostVO;
+import com.playground.vo.post.PostVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

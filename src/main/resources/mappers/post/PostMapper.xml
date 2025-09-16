@@ -5,7 +5,7 @@
 
 <mapper namespace="com.playground.mapper.PostMapper">
 
-  <resultMap id="postResultMap" type="com.playground.vo.PostVO">
+  <resultMap id="postResultMap" type="com.playground.vo.post.PostVO">
     <id property="postId" column="post_id"/>
     <result property="memberId" column="member_id"/>
     <result property="title" column="title"/>
@@ -16,7 +16,7 @@
     <result property="writerNickname" column="writer_nickname"/>
   </resultMap>
 
-  <insert id="insertPost" parameterType="com.playground.vo.PostVO">
+  <insert id="insertPost" parameterType="com.playground.vo.post.PostVO">
     INSERT INTO post (title, content, member_id)
     VALUES (#{title}, #{content}, #{memberId})
   </insert>
@@ -40,7 +40,7 @@
     SELECT COUNT(*) FROM post
   </select>
 
-  <update id="updatePost" parameterType="com.playground.vo.PostVO">
+  <update id="updatePost" parameterType="com.playground.vo.post.PostVO">
     UPDATE post
     SET title = #{title}, content = #{content}
     WHERE post_id = #{postId}

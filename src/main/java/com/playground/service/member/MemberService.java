@@ -1,4 +1,4 @@
-package com.playground.service;
+package com.playground.service.member;
 
 import com.playground.vo.member.MemberVO;
 
