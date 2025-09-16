@@ -498,6 +498,7 @@ function validateForm() {
 }
 
 // 제목 검증
+// 제목 검증
 function validateTitle() {
   const titleInput = document.getElementById('title');
   const title = titleInput.value.trim();
@@ -506,11 +507,6 @@ function validateTitle() {
 
   if (!title) {
     showError(titleInput, '제목을 입력해주세요.');
-    return false;
-  }
-
-  if (title.length < 2) {
-    showError(titleInput, '제목은 2자 이상 입력해주세요.');
     return false;
   }
 
@@ -531,11 +527,6 @@ function validateContent() {
 
   if (!content) {
     showError(contentTextarea, '내용을 입력해주세요.');
-    return false;
-  }
-
-  if (content.length < 10) {
-    showError(contentTextarea, '내용은 10자 이상 입력해주세요.');
     return false;
   }
 

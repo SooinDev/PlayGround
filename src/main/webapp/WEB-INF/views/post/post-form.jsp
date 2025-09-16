@@ -126,7 +126,7 @@
           </div>
           <textarea id="content" name="content" class="form-textarea content-textarea"
                     placeholder="게시글 내용을 입력해주세요&#10;&#10;• 다른 회원들이 이해하기 쉽도록 구체적으로 작성해주세요&#10;• 적절한 문단 구분을 통해 가독성을 높여주세요&#10;• 관련 링크나 참고자료가 있다면 함께 공유해주세요"
-                    required minlength="10" maxlength="10000" rows="15"><c:if test="${not empty post}">${post.content}</c:if></textarea>
+                    required maxlength="10000" rows="15"></textarea>
           <div class="input-info">
             <div class="content-tips">
               <span class="tip-icon">💡</span>
