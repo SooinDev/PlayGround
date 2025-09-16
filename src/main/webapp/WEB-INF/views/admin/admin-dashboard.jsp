@@ -28,16 +28,13 @@
       </div>
       <div class="nav-buttons">
         <a href="<c:url value='/admin/members'/>" class="nav-btn nav-btn-primary">
-          <span class="btn-icon">👥</span>
-          회원 관리
+          <span class="btn-icon">회원 관리</span>
         </a>
         <a href="<c:url value='/admin/settings'/>" class="nav-btn nav-btn-secondary">
-          <span class="btn-icon">⚙️</span>
-          설정
+          <span class="btn-icon">설정</span>
         </a>
         <a href="<c:url value='/admin/logout'/>" class="nav-btn nav-btn-logout">
-          <span class="btn-icon">🚪</span>
-          로그아웃
+          <span class="btn-icon">로그아웃</span>
         </a>
       </div>
     </div>
@@ -67,8 +64,7 @@
       </div>
       <div class="header-actions">
         <button class="action-btn refresh-btn" onclick="refreshDashboard()">
-          <span class="btn-icon">🔄</span>
-          새로고침
+          <span class="btn-icon">새로고침</span>
         </button>
       </div>
     </div>

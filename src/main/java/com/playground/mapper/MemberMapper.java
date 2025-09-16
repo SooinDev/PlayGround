@@ -4,6 +4,8 @@ import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.MemberVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface MemberMapper {
 
   /**
@@ -85,4 +87,9 @@ public interface MemberMapper {
    * @param newEmail
    */
   void updateEmail(@Param("currentEmail") String currentEmail, @Param("newEmail") String newEmail);
+
+
+  int countAllMembers();
+
+  List<MemberVO> selectAllMembers(@Param("limit") int limit, @Param("offset") int offset);
 }

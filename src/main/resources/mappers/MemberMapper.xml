@@ -103,4 +103,15 @@
     SELECT * FROM member WHERE member_id = #{memberId}
   </select>
 
+  <select id="countAllMembers" resultType="int">
+    SELECT COUNT(*) FROM member
+  </select>
+
+  <select id="selectAllMembers" resultMap="memberResultMap">
+    SELECT *
+    FROM member
+    ORDER BY member_id DESC
+      LIMIT #{limit} OFFSET #{offset}
+  </select>
+
 </mapper>

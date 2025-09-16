@@ -1,21 +1,30 @@
 package com.playground.service.impl;
 
 import com.playground.mapper.AdminMapper;
+import com.playground.mapper.MemberMapper;
 import com.playground.service.AdminService;
 import com.playground.vo.AdminVO;
 import com.playground.vo.LoginAttemptVO;
+import com.playground.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
   @Autowired
   AdminMapper adminMapper;
+
+  @Autowired
+  MemberMapper memberMapper;
 
   @Autowired
   PasswordEncoder passwordEncoder;
@@ -55,5 +64,34 @@ public class AdminServiceImpl implements AdminService {
 
       return null; // 로그인 실패 시 null 반환
     }
+  }
+
+  /**
+   * 회원 목록을 페이지에 맞게 가져오는 메서드
+   * @param page
+   * @return
+   */
+  @Override
+  public Map<String, Object> getMemberList(int page) {
+
+    int pageSize = 10;
+    int offset = (page - 1) * pageSize;
+
+    // 현재 페이지의 회원 목록 조회
+    List<MemberVO> memberVOList = memberMapper.selectAllMembers(pageSize, offset);
+
+    // 전체 회원 수 조회
+    int totalMembers = memberMapper.countAllMembers();
+
+    // 전체 페이지 수 계산
+    int totalPages = (int) Math.ceil((double) totalMembers / (double) pageSize);
+
+    // 결과를 Map에 담아 반환
+    Map<String, Object> result = new HashMap<>();
+    result.put("memberList", memberVOList);
+    result.put("totalPages", totalPages);
+    result.put("currentPage", page);
+
+    return result;
   }
 }
