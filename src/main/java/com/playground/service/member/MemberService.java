@@ -22,6 +22,7 @@ public interface MemberService {
    * @throws AccountLockedException
    */
   MemberVO login(MemberVO memberVO, HttpServletRequest request) throws AccountLockedException;
+
   /**
    * 비밀번호 찾기
    * @param email
