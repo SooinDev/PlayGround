@@ -1,4 +1,4 @@
-package com.playground.mapper;
+package com.playground.mapper.post;
 
 import com.playground.vo.post.PostVO;
 import org.apache.ibatis.annotations.Param;

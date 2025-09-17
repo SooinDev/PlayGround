@@ -9,6 +9,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
     HttpSession session = request.getSession(false);
 
     // 세션에 "loginAdmin" 정보가 없으면
