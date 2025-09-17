@@ -3,6 +3,7 @@ package com.playground.service.admin.impl;
 import com.playground.mapper.admin.AdminMapper;
 import com.playground.mapper.member.MemberMapper;
 import com.playground.service.admin.AdminService;
+import com.playground.vo.MemberStatus;
 import com.playground.vo.admin.AdminVO;
 import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.member.MemberVO;
@@ -92,5 +93,10 @@ public class AdminServiceImpl implements AdminService {
     result.put("currentPage", page);
 
     return result;
+  }
+
+  @Override
+  public void changeMemberStatus(Long memberId, MemberStatus status) {
+    memberMapper.updateMemberStatus(memberId, status);
   }
 }

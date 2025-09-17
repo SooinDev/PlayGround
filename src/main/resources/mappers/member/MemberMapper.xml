@@ -114,4 +114,10 @@
       LIMIT #{limit} OFFSET #{offset}
   </select>
 
+  <update id="updateMemberStatus">
+    UPDATE member
+    SET status = #{status}
+    WHERE member_id = #{memberId}
+  </update>
+
 </mapper>

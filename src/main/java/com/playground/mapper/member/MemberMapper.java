@@ -1,6 +1,7 @@
 package com.playground.mapper.member;
 
 import com.playground.vo.LoginAttemptVO;
+import com.playground.vo.MemberStatus;
 import com.playground.vo.member.MemberVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -88,8 +89,24 @@ public interface MemberMapper {
    */
   void updateEmail(@Param("currentEmail") String currentEmail, @Param("newEmail") String newEmail);
 
-
+  /**
+   * 모든 회원 수 반환
+   * @return
+   */
   int countAllMembers();
 
+  /**
+   * 모든 회원의 정보 반환
+   * @param limit
+   * @param offset
+   * @return
+   */
   List<MemberVO> selectAllMembers(@Param("limit") int limit, @Param("offset") int offset);
+
+  /**
+   * 회원 상태 변경
+   * @param memberId
+   * @param status
+   */
+  void updateMemberStatus(@Param("memberId") Long memberId, @Param("status") MemberStatus status);
 }

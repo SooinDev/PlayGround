@@ -1,5 +1,6 @@
 package com.playground.service.admin;
 
+import com.playground.vo.MemberStatus;
 import com.playground.vo.admin.AdminVO;
 
 import javax.security.auth.login.AccountLockedException;
@@ -11,4 +12,6 @@ public interface AdminService {
   AdminVO login(AdminVO adminVO, HttpServletRequest request) throws AccountLockedException;
 
   Map<String, Object> getMemberList(int page);
+
+  void changeMemberStatus(Long memberId, MemberStatus status);
 }

@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 모달 기능
   initModal();
+
+  // 회원 상태 관리 기능
+  initMemberStatusManagement();
 });
 
 // 회원 목록 초기화
@@ -98,6 +101,291 @@ function initModal() {
       }
     });
   }
+}
+
+// 회원 상태 관리 기능 초기화
+function initMemberStatusManagement() {
+  // 모든 상태 셀렉트 박스에 이벤트 리스너 추가
+  const statusSelects = document.querySelectorAll('.status-select');
+  statusSelects.forEach(select => {
+    select.addEventListener('change', function(e) {
+      const memberId = this.dataset.memberId;
+      const newStatus = this.value;
+      const oldStatus = this.dataset.originalStatus;
+
+      // 상태 변경 확인
+      confirmStatusChange(memberId, oldStatus, newStatus, this);
+    });
+  });
+
+  // 일괄 상태 변경 기능
+  initBulkStatusChange();
+}
+
+// 일괄 상태 변경 기능 초기화
+function initBulkStatusChange() {
+  // 전체 선택 체크박스
+  const selectAllCheckbox = document.getElementById('selectAll');
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+      const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+      memberCheckboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+      updateBulkActionButtons();
+    });
+  }
+
+  // 개별 체크박스
+  const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+  memberCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      updateBulkActionButtons();
+      updateSelectAllCheckbox();
+    });
+  });
+}
+
+// 상태 변경 확인 다이얼로그
+function confirmStatusChange(memberId, oldStatus, newStatus, selectElement) {
+  const statusNames = {
+    'ACTIVE': '활성',
+    'INACTIVE': '비활성',
+    'SUSPENDED': '정지'
+  };
+
+  const memberRow = document.querySelector(`[data-member-id="${memberId}"]`);
+  const memberName = memberRow ? memberRow.querySelector('.member-name')?.textContent : `ID ${memberId}`;
+
+  const confirmMessage = `회원 "${memberName}"의 상태를 "${statusNames[oldStatus]}"에서 "${statusNames[newStatus]}"로 변경하시겠습니까?`;
+
+  if (confirm(confirmMessage)) {
+    changeMemberStatus(memberId, newStatus, selectElement);
+  } else {
+    // 취소 시 원래 값으로 복원
+    selectElement.value = oldStatus;
+  }
+}
+
+// 회원 상태 변경 실행
+function changeMemberStatus(memberId, newStatus, selectElement) {
+  // 로딩 상태 표시
+  const originalColor = selectElement.style.backgroundColor;
+  selectElement.disabled = true;
+  selectElement.style.backgroundColor = '#374151';
+
+  showNotification(`회원 상태를 변경하는 중...`, 'info');
+
+  // 실제 구현에서는 서버 API 호출
+  const statusData = {
+    memberId: memberId,
+    status: newStatus,
+    changedBy: 'admin', // 실제로는 현재 로그인한 관리자 ID
+    timestamp: new Date().toISOString()
+  };
+
+  // 서버 요청 시뮬레이션
+  setTimeout(() => {
+    fetch(`/admin/members/${memberId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(statusData)
+    })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            // 성공 시 UI 업데이트
+            updateMemberStatusUI(memberId, newStatus, selectElement);
+            showNotification(`회원 상태가 성공적으로 변경되었습니다.`, 'success');
+            logAdminActivity('member_status_change', `${memberId}:${newStatus}`);
+          } else {
+            throw new Error(data.message || '상태 변경 실패');
+          }
+        })
+        .catch(error => {
+          console.error('상태 변경 오류:', error);
+          showNotification(`상태 변경 중 오류가 발생했습니다: ${error.message}`, 'error');
+
+          // 오류 시 원래 값으로 복원
+          selectElement.value = selectElement.dataset.originalStatus;
+        })
+        .finally(() => {
+          // 로딩 상태 해제
+          selectElement.disabled = false;
+          selectElement.style.backgroundColor = originalColor;
+        });
+  }, 1000); // 실제 구현에서는 이 setTimeout 제거
+}
+
+// 회원 상태 UI 업데이트
+function updateMemberStatusUI(memberId, newStatus, selectElement) {
+  // 원본 상태 업데이트
+  selectElement.dataset.originalStatus = newStatus;
+
+  // 상태에 따른 스타일 적용
+  const statusColors = {
+    'ACTIVE': '#10b981',
+    'INACTIVE': '#6b7280',
+    'SUSPENDED': '#ef4444'
+  };
+
+  selectElement.style.color = statusColors[newStatus];
+  selectElement.style.borderColor = statusColors[newStatus];
+
+  // 회원 행에 상태 클래스 업데이트
+  const memberRow = document.querySelector(`[data-member-id="${memberId}"]`);
+  if (memberRow) {
+    memberRow.classList.remove('status-active', 'status-inactive', 'status-suspended');
+    memberRow.classList.add(`status-${newStatus.toLowerCase()}`);
+  }
+}
+
+// 일괄 상태 변경
+function bulkChangeStatus(newStatus) {
+  const selectedMembers = getSelectedMembers();
+
+  if (selectedMembers.length === 0) {
+    showNotification('변경할 회원을 선택해주세요.', 'warning');
+    return;
+  }
+
+  const statusNames = {
+    'ACTIVE': '활성',
+    'INACTIVE': '비활성',
+    'SUSPENDED': '정지'
+  };
+
+  const confirmMessage = `선택된 ${selectedMembers.length}명의 회원 상태를 "${statusNames[newStatus]}"로 변경하시겠습니까?`;
+
+  if (!confirm(confirmMessage)) {
+    return;
+  }
+
+  showNotification(`${selectedMembers.length}명의 회원 상태를 변경하는 중...`, 'info');
+
+  // 일괄 변경 요청
+  const bulkData = {
+    memberIds: selectedMembers,
+    status: newStatus,
+    changedBy: 'admin',
+    timestamp: new Date().toISOString()
+  };
+
+  fetch('/admin/members/bulk-status', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify(bulkData)
+  })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // 각 선택된 회원의 상태 UI 업데이트
+          selectedMembers.forEach(memberId => {
+            const selectElement = document.querySelector(`[data-member-id="${memberId}"] .status-select`);
+            if (selectElement) {
+              selectElement.value = newStatus;
+              updateMemberStatusUI(memberId, newStatus, selectElement);
+            }
+          });
+
+          showNotification(`${selectedMembers.length}명의 회원 상태가 성공적으로 변경되었습니다.`, 'success');
+          logAdminActivity('bulk_status_change', `${selectedMembers.length}:${newStatus}`);
+
+          // 선택 해제
+          clearMemberSelection();
+        } else {
+          throw new Error(data.message || '일괄 상태 변경 실패');
+        }
+      })
+      .catch(error => {
+        console.error('일괄 상태 변경 오류:', error);
+        showNotification(`일괄 상태 변경 중 오류가 발생했습니다: ${error.message}`, 'error');
+      });
+}
+
+// 선택된 회원 ID 목록 반환
+function getSelectedMembers() {
+  const selectedCheckboxes = document.querySelectorAll('.member-checkbox:checked');
+  return Array.from(selectedCheckboxes).map(checkbox => checkbox.dataset.memberId);
+}
+
+// 회원 선택 해제
+function clearMemberSelection() {
+  const checkboxes = document.querySelectorAll('.member-checkbox, #selectAll');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+  updateBulkActionButtons();
+}
+
+// 일괄 작업 버튼 업데이트
+function updateBulkActionButtons() {
+  const selectedCount = getSelectedMembers().length;
+  const bulkActions = document.querySelector('.bulk-actions');
+
+  if (bulkActions) {
+    if (selectedCount > 0) {
+      bulkActions.style.display = 'flex';
+      bulkActions.querySelector('.selected-count').textContent = `${selectedCount}명 선택됨`;
+    } else {
+      bulkActions.style.display = 'none';
+    }
+  }
+}
+
+// 전체 선택 체크박스 업데이트
+function updateSelectAllCheckbox() {
+  const selectAllCheckbox = document.getElementById('selectAll');
+  const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+  const checkedCount = document.querySelectorAll('.member-checkbox:checked').length;
+
+  if (selectAllCheckbox) {
+    selectAllCheckbox.checked = checkedCount === memberCheckboxes.length && memberCheckboxes.length > 0;
+    selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < memberCheckboxes.length;
+  }
+}
+
+// 상태별 필터링
+function filterByStatus(status) {
+  const rows = document.querySelectorAll('.member-row');
+  let visibleCount = 0;
+
+  rows.forEach(row => {
+    const statusSelect = row.querySelector('.status-select');
+    const memberStatus = statusSelect ? statusSelect.value : '';
+
+    if (status === 'all' || memberStatus === status) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  updateTableInfo(visibleCount);
+
+  // 필터 버튼 활성화 상태 업데이트
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  filterButtons.forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.status === status) {
+      btn.classList.add('active');
+    }
+  });
+
+  showNotification(`${visibleCount}명의 회원이 필터링되었습니다.`, 'info');
+  logAdminActivity('status_filter', status);
 }
 
 // 검색 패널 토글 (전역 함수)
@@ -227,6 +515,13 @@ function viewMember(memberId) {
   const nickname = memberRow.querySelector('.member-name')?.textContent || '';
   const email = memberRow.querySelector('.member-email')?.textContent || '';
   const regDate = memberRow.querySelector('.td-date')?.textContent || '';
+  const status = memberRow.querySelector('.status-select')?.value || '';
+
+  const statusNames = {
+    'ACTIVE': '활성',
+    'INACTIVE': '비활성',
+    'SUSPENDED': '정지'
+  };
 
   modalBody.innerHTML = `
     <div class="member-detail">
@@ -249,6 +544,23 @@ function viewMember(memberId) {
             <span class="detail-label">가입일</span>
             <span class="detail-value">${regDate}</span>
           </div>
+          <div class="detail-item">
+            <span class="detail-label">상태</span>
+            <span class="detail-value status-badge status-${status.toLowerCase()}">${statusNames[status] || status}</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h4 class="detail-title">상태 변경</h4>
+        <div class="status-change-section">
+          <select class="modal-status-select" data-member-id="${memberId}">
+            <option value="ACTIVE" ${status === 'ACTIVE' ? 'selected' : ''}>활성</option>
+            <option value="INACTIVE" ${status === 'INACTIVE' ? 'selected' : ''}>비활성</option>
+            <option value="SUSPENDED" ${status === 'SUSPENDED' ? 'selected' : ''}>정지</option>
+          </select>
+          <button type="button" class="btn-change-status" onclick="changeStatusFromModal(${memberId})">
+            상태 변경
+          </button>
         </div>
       </div>
     </div>
@@ -286,6 +598,41 @@ function viewMember(memberId) {
       color: #e2e8f0; 
       font-weight: 500; 
     }
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-badge.status-active { background: #10b981; color: white; }
+    .status-badge.status-inactive { background: #6b7280; color: white; }
+    .status-badge.status-suspended { background: #ef4444; color: white; }
+    .status-change-section {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .modal-status-select {
+      padding: 8px 12px;
+      border: 1px solid #374151;
+      background: #1f2937;
+      color: #f9fafb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .btn-change-status {
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .btn-change-status:hover {
+      background: #2563eb;
+    }
   `;
 
   if (!document.getElementById('modal-styles')) {
@@ -295,6 +642,24 @@ function viewMember(memberId) {
 
   modal.classList.add('active');
   logAdminActivity('member_view', memberId.toString());
+}
+
+// 모달에서 상태 변경
+function changeStatusFromModal(memberId) {
+  const modalSelect = document.querySelector('.modal-status-select');
+  const newStatus = modalSelect.value;
+  const tableSelect = document.querySelector(`[data-member-id="${memberId}"] .status-select`);
+
+  if (tableSelect && tableSelect.value !== newStatus) {
+    changeMemberStatus(memberId, newStatus, tableSelect);
+
+    // 모달 닫기
+    setTimeout(() => {
+      closeMemberModal();
+    }, 1500);
+  } else {
+    showNotification('동일한 상태입니다.', 'info');
+  }
 }
 
 // 회원 편집 (전역 함수)
@@ -436,3 +801,16 @@ window.addEventListener('offline', function() {
 });
 
 console.log("회원 목록 페이지 스크립트 초기화 완료");
+
+// 전역 함수들 (HTML에서 직접 호출 가능)
+window.toggleSearchPanel = toggleSearchPanel;
+window.refreshMemberList = refreshMemberList;
+window.performSearch = performSearch;
+window.resetSearch = resetSearch;
+window.viewMember = viewMember;
+window.editMember = editMember;
+window.deleteMember = deleteMember;
+window.closeMemberModal = closeMemberModal;
+window.bulkChangeStatus = bulkChangeStatus;
+window.filterByStatus = filterByStatus;
+window.changeStatusFromModal = changeStatusFromModal;

@@ -1,4 +1,4 @@
-/* 관리자 로그인 CSS - 메인페이지와 일관된 Apple 스타일 */
+/* 관리자 로그인 CSS - 수정된 버전 */
 * {
   margin: 0;
   padding: 0;
@@ -7,7 +7,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  background: #1a1a1a;
   color: #f5f5f7;
   line-height: 1.47059;
   font-weight: 400;
@@ -20,6 +20,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* 왼쪽 일러스트레이션 패널 */
@@ -30,6 +31,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 40px;
 }
 
 .illustration-panel::before {
@@ -48,8 +50,8 @@ body {
   position: relative;
   z-index: 2;
   text-align: center;
-  padding: 60px 40px;
   max-width: 500px;
+  width: 100%;
 }
 
 /* 관리자 대시보드 일러스트레이션 */
@@ -68,7 +70,8 @@ body {
 .dashboard-screen {
   width: 280px;
   height: 200px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(28, 28, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -86,7 +89,7 @@ body {
 
 .header-item {
   height: 6px;
-  background: #e2e8f0;
+  background: #48484a;
   border-radius: 3px;
   flex: 1;
 }
@@ -174,13 +177,13 @@ body {
   font-size: 14px;
 }
 
-/* 텍스트 콘텐츠 */
-.illustration-text {
+/* 태그라인 텍스트 */
+.tagline {
   position: relative;
   z-index: 2;
 }
 
-.main-title {
+.tagline h1 {
   font-size: 42px;
   font-weight: 700;
   margin-bottom: 16px;
@@ -189,62 +192,40 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -1.5px;
+  line-height: 1.2;
 }
 
-.subtitle {
+.tagline p {
   font-size: 19px;
   color: #86868b;
   line-height: 1.4;
-  margin-bottom: 32px;
-}
-
-.feature-highlights {
-  list-style: none;
-  text-align: left;
-  max-width: 300px;
-  margin: 0 auto;
-}
-
-.feature-highlights li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  font-size: 14px;
-  color: #86868b;
-}
-
-.feature-icon {
-  font-size: 16px;
-  color: #007aff;
 }
 
 /* 오른쪽 로그인 패널 */
-.login-panel {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(20px);
+.form-panel {
+  background: #2c2c2e;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 40px;
+  padding: 40px;
   position: relative;
 }
 
-.login-form-container {
+.form-content {
   width: 100%;
   max-width: 400px;
   position: relative;
   z-index: 2;
 }
 
-/* 로그인 헤더 */
-.login-header {
+/* 브랜드 헤더 */
+.brand-header {
   text-align: center;
   margin-bottom: 40px;
 }
 
-.login-logo {
+.logo {
   font-size: 32px;
   font-weight: 700;
   background: linear-gradient(135deg, #007aff 0%, #5ac8fa 100%);
@@ -255,7 +236,7 @@ body {
   display: block;
 }
 
-.login-title {
+.brand-header h2 {
   font-size: 24px;
   font-weight: 600;
   color: #f5f5f7;
@@ -263,7 +244,7 @@ body {
   letter-spacing: -0.5px;
 }
 
-.login-description {
+.subtitle {
   color: #86868b;
   font-size: 16px;
 }
@@ -287,14 +268,79 @@ body {
   color: #f5f5f7;
 }
 
-.form-input {
+.form-group input {
   width: 100%;
   padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1c1c1e;
+  border: 1px solid #38383a;
   border-radius: 12px;
   color: #f5f5f7;
   font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007aff;
+  background: #1c1c1e;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #86868b;
+}
+
+/* 비밀번호 필드 */
+.password-field {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+  color: #86868b;
+}
+
+.password-toggle:hover {
+  opacity: 1;
+}
+
+/* 폼 옵션 */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #86868b;
+}
+
+.remember-me input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #38383a;
+  border-radius: 4px;
+  margin-right: 8px;
+  position: relative;
   transition: all 0.3s ease;
 }
 
@@ -312,18 +358,6 @@ body {
   color: white;
   font-size: 12px;
   font-weight: bold;
-}
-
-.forgot-password {
-  color: #007aff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.forgot-password:hover {
-  color: #5ac8fa;
-  text-decoration: underline;
 }
 
 .security-notice {
@@ -392,27 +426,49 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* 추가 옵션 */
-.login-footer {
-  text-align: center;
-  margin-top: 32px;
-  padding-top: 24px;
+/* 보안 정보 */
+.security-info {
+  margin: 32px 0;
+  padding: 24px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.footer-text {
-  color: #86868b;
-  font-size: 14px;
+.security-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
+.security-item:last-child {
+  margin-bottom: 0;
 }
 
-.footer-link {
+.security-item .security-icon {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.security-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f5f5f7;
+  margin-bottom: 4px;
+}
+
+.security-content p {
+  font-size: 13px;
+  color: #86868b;
+  line-height: 1.4;
+}
+
+/* 뒤로가기 링크 */
+.back-link {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.back-link a {
   color: #007aff;
   text-decoration: none;
   font-size: 14px;
@@ -420,7 +476,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.footer-link:hover {
+.back-link a:hover {
   color: #5ac8fa;
   text-decoration: underline;
 }
@@ -490,11 +546,11 @@ body {
     padding: 12px;
   }
 
-  .main-title {
+  .tagline h1 {
     font-size: 32px;
   }
 
-  .subtitle {
+  .tagline p {
     font-size: 16px;
   }
 }
@@ -505,23 +561,23 @@ body {
     padding: 20px;
   }
 
-  .login-panel {
+  .form-panel {
     padding: 40px 20px;
   }
 
-  .login-form-container {
+  .form-content {
     max-width: 100%;
   }
 
-  .main-title {
+  .tagline h1 {
     font-size: 28px;
   }
 
-  .login-title {
+  .brand-header h2 {
     font-size: 20px;
   }
 
-  .form-input {
+  .form-group input {
     padding: 14px 16px;
     font-size: 16px;
   }
@@ -530,11 +586,6 @@ body {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
-  }
-
-  .footer-links {
-    flex-direction: column;
-    gap: 12px;
   }
 }
 
@@ -547,35 +598,20 @@ body {
     padding: 20px;
   }
 
-  .feature-highlights {
-    display: none;
-  }
-
-  .login-panel {
+  .form-panel {
     padding: 20px;
   }
 
-  .login-header {
+  .brand-header {
     margin-bottom: 30px;
   }
 
-  .login-logo {
+  .logo {
     font-size: 28px;
   }
 
-  .main-title {
+  .tagline h1 {
     font-size: 24px;
-  }
-}
-
-/* 다크 모드 지원 */
-@media (prefers-color-scheme: dark) {
-  .dashboard-screen {
-    background: rgba(29, 29, 31, 0.95);
-  }
-
-  .header-item {
-    background: #48484a;
   }
 }
 
@@ -589,104 +625,16 @@ body {
 }
 
 /* 포커스 표시 개선 */
-.form-input:focus-visible,
+.form-group input:focus-visible,
 .login-btn:focus-visible,
-.footer-link:focus-visible,
-.forgot-password:focus-visible {
+.back-link a:focus-visible {
   outline: 2px solid #007aff;
   outline-offset: 2px;
 }
 
-/* 고대비 모드 지원 */
-@media (prefers-contrast: more) {
-  .form-input {
-    border-width: 2px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(20px);
-  }
-
-  .login-btn {
-    border: 2px solid #007aff;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(20px);
-  }
-
-  .error-message,
-  .success-message {
-    border-width: 2px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(20px);
-  }
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #007aff;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #007aff;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-}
-
-.form-input::placeholder {
-  color: #86868b;
-}
-
-/* 비밀번호 토글 */
-.password-field {
-  position: relative;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-  color: #86868b;
-}
-
-.password-toggle:hover {
-  opacity: 1;
-}
-
-/* 폼 옵션 */
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-  font-size: 14px;
-}
-
-.remember-me {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: #86868b;
-}
-
-.remember-me input[type="checkbox"] {
-  display: none;
-}
-
-.checkmark {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  margin-right: 8px;
-  position: relative;
-  transition: all;
+/* 키보드 네비게이션 지원 */
+.keyboard-navigation input:focus,
+.keyboard-navigation button:focus {
+  outline: 2px solid #007aff !important;
+  outline-offset: 2px !important;
 }
