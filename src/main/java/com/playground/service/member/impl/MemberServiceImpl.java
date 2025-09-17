@@ -1,6 +1,7 @@
-package com.playground.service.member;
+package com.playground.service.member.impl;
 
 import com.playground.mapper.member.MemberMapper;
+import com.playground.service.member.MemberService;
 import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.member.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;

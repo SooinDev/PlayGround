@@ -1,7 +1,8 @@
-package com.playground.service.admin;
+package com.playground.service.admin.impl;
 
 import com.playground.mapper.admin.AdminMapper;
 import com.playground.mapper.member.MemberMapper;
+import com.playground.service.admin.AdminService;
 import com.playground.vo.admin.AdminVO;
 import com.playground.vo.LoginAttemptVO;
 import com.playground.vo.member.MemberVO;

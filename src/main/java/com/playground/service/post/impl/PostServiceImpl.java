@@ -1,6 +1,7 @@
-package com.playground.service.post;
+package com.playground.service.post.impl;
 
 import com.playground.mapper.post.PostMapper;
+import com.playground.service.post.PostService;
 import com.playground.vo.post.PostVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
