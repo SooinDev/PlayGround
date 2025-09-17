@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 게시글 상세 페이지 초기화
 function initializePostDetail() {
-  // 코드 블록 하이라이팅 (추후 구현 가능)
+  // 코드 블록 하이라이팅
   highlightCodeBlocks();
 
   // 외부 링크 새 창에서 열기
@@ -22,14 +22,11 @@ function initializePostDetail() {
   // 이미지 지연 로딩
   setupLazyLoading();
 
-  // 읽기 시간 계산
-  calculateReadingTime();
-
-  // 목차 생성 (긴 글일 경우)
-  generateTableOfContents();
-
   // 반응 상태 복원
   restoreReactionStates();
+
+  // 페이지 애니메이션
+  animatePageLoad();
 }
 
 // 이벤트 리스너 설정
@@ -54,13 +51,10 @@ function setupEventListeners() {
     });
   }
 
-  // 공유 버튼 이벤트
-  const shareBtn = document.querySelector('.share-btn');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', function() {
-      const postId = getPostIdFromUrl();
-      sharePost(postId);
-    });
+  // 댓글 폼 이벤트
+  const commentForm = document.querySelector('.comment-form');
+  if (commentForm) {
+    commentForm.addEventListener('submit', submitComment);
   }
 }
 
@@ -72,7 +66,6 @@ function setupScrollEvents() {
     if (!ticking) {
       requestAnimationFrame(function() {
         updateScrollElements();
-        updateReadingProgress();
         ticking = false;
       });
       ticking = true;
@@ -83,56 +76,13 @@ function setupScrollEvents() {
 // 댓글 시스템 초기화
 function initializeComments() {
   updateCommentCharCount();
-
-  // 댓글 정렬 이벤트
-  const sortSelect = document.querySelector('.comment-sort select');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', function() {
-      sortComments(this.value);
-    });
-  }
-}
-
-// 댓글 글자 수 업데이트
-function updateCommentCharCount() {
-  const textarea = document.querySelector('.comment-textarea');
-  const charCountSpan = document.querySelector('.char-count');
-
-  if (textarea && charCountSpan) {
-    const currentLength = textarea.value.length;
-    const maxLength = textarea.getAttribute('maxlength') || 500;
-
-    charCountSpan.textContent = `${currentLength}/${maxLength}`;
-
-    // 글자 수에 따른 색상 변경
-    if (currentLength > maxLength * 0.9) {
-      charCountSpan.style.color = '#ef4444';
-    } else if (currentLength > maxLength * 0.7) {
-      charCountSpan.style.color = '#f59e0b';
-    } else {
-      charCountSpan.style.color = '#64748b';
-    }
-
-    commentCharCount = currentLength;
-  }
-}
-
-// 댓글 입력 키보드 이벤트
-function handleCommentKeydown(e) {
-  // Ctrl/Cmd + Enter로 댓글 제출
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault();
-    const form = e.target.closest('form');
-    if (form) {
-      submitComment({ target: form, preventDefault: () => {} });
-    }
-  }
 }
 
 // 반응 버튼 설정
 function setupReactionButtons() {
   const likeBtn = document.querySelector('.like-btn');
   const bookmarkBtn = document.querySelector('.bookmark-btn');
+  const shareBtn = document.querySelector('.share-btn');
 
   if (likeBtn) {
     likeBtn.addEventListener('click', function() {
@@ -147,90 +97,161 @@ function setupReactionButtons() {
       toggleBookmark(postId);
     });
   }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+      const postId = getPostIdFromUrl();
+      sharePost(postId);
+    });
+  }
+}
+
+// URL에서 게시글 ID 추출
+function getPostIdFromUrl() {
+  const path = window.location.pathname;
+  const matches = path.match(/\/posts\/(\d+)/);
+  return matches ? parseInt(matches[1]) : null;
+}
+
+// 로그인 상태 확인
+function isLoggedIn() {
+  return document.querySelector('.nav-user-info') !== null ||
+      document.querySelector('.comment-form-container') !== null;
+}
+
+// 댓글 글자 수 업데이트
+function updateCommentCharCount() {
+  const textarea = document.querySelector('.comment-textarea');
+  const charCount = document.querySelector('.char-count');
+
+  if (textarea && charCount) {
+    const count = textarea.value.length;
+    commentCharCount = count;
+    charCount.textContent = `${count}/500`;
+
+    // 글자 수에 따른 색상 변경
+    if (count > 450) {
+      charCount.style.color = '#ff3b30';
+    } else if (count > 400) {
+      charCount.style.color = '#ffcc00';
+    } else {
+      charCount.style.color = '#86868b';
+    }
+  }
+}
+
+// 댓글 입력 키보드 이벤트
+function handleCommentKeydown(event) {
+  // Ctrl+Enter 또는 Cmd+Enter로 댓글 제출
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault();
+    const form = event.target.closest('.comment-form');
+    if (form) {
+      submitComment({ target: form, preventDefault: () => {} });
+    }
+  }
 }
 
 // 스크롤 관련 요소 업데이트
 function updateScrollElements() {
-  const scrollTop = window.pageYOffset;
-  const navbar = document.querySelector('.main-navbar');
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   const scrollToTopBtn = document.querySelector('.scroll-to-top');
-  const scrollToCommentsBtn = document.querySelector('.scroll-to-comments');
 
-  // 네비게이션 바 투명도 조정
-  if (navbar) {
-    if (scrollTop > 100) {
-      navbar.style.background = 'rgba(30, 41, 59, 0.98)';
-    } else {
-      navbar.style.background = 'rgba(30, 41, 59, 0.95)';
-    }
-  }
-
-  // 플로팅 버튼들 표시/숨김
   if (scrollToTopBtn) {
-    if (scrollTop > 500) {
+    if (scrollTop > 300) {
       scrollToTopBtn.style.opacity = '1';
-      scrollToTopBtn.style.visibility = 'visible';
+      scrollToTopBtn.style.pointerEvents = 'auto';
     } else {
-      scrollToTopBtn.style.opacity = '0';
-      scrollToTopBtn.style.visibility = 'hidden';
-    }
-  }
-
-  if (scrollToCommentsBtn) {
-    const commentsSection = document.querySelector('.comments-section');
-    if (commentsSection) {
-      const commentsTop = commentsSection.offsetTop;
-      if (scrollTop < commentsTop - 200) {
-        scrollToCommentsBtn.style.opacity = '1';
-        scrollToCommentsBtn.style.visibility = 'visible';
-      } else {
-        scrollToCommentsBtn.style.opacity = '0';
-        scrollToCommentsBtn.style.visibility = 'hidden';
-      }
+      scrollToTopBtn.style.opacity = '0.6';
+      scrollToTopBtn.style.pointerEvents = 'auto';
     }
   }
 }
 
-// 읽기 진행률 업데이트
-function updateReadingProgress() {
-  const article = document.querySelector('.post-detail');
-  if (!article) return;
-
-  const articleTop = article.offsetTop;
-  const articleHeight = article.offsetHeight;
-  const windowHeight = window.innerHeight;
-  const scrollTop = window.pageYOffset;
-
-  const progress = Math.min(
-      Math.max((scrollTop - articleTop + windowHeight) / articleHeight, 0),
-      1
-  );
-
-  // 진행률 표시 (헤더에 프로그래스 바 추가 가능)
-  updateProgressBar(progress);
+// 코드 블록 하이라이팅
+function highlightCodeBlocks() {
+  const codeBlocks = document.querySelectorAll('pre code');
+  codeBlocks.forEach(block => {
+    block.classList.add('highlighted');
+  });
 }
 
-// 진행률 바 업데이트
-function updateProgressBar(progress) {
-  let progressBar = document.querySelector('.reading-progress');
+// 외부 링크 설정
+function setupExternalLinks() {
+  const links = document.querySelectorAll('.content-body a[href^="http"]');
+  links.forEach(link => {
+    if (!link.hostname.includes(window.location.hostname)) {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+      link.setAttribute('title', '외부 링크');
+    }
+  });
+}
 
-  if (!progressBar) {
-    progressBar = document.createElement('div');
-    progressBar.className = 'reading-progress';
-    Object.assign(progressBar.style, {
-      position: 'fixed',
-      top: '60px',
-      left: '0',
-      width: '0%',
-      height: '3px',
-      background: 'linear-gradient(90deg, #3b82f6, #06b6d4)',
-      zIndex: '1001',
-      transition: 'width 0.1s ease'
+// 이미지 지연 로딩 설정
+function setupLazyLoading() {
+  const images = document.querySelectorAll('.content-body img[data-src]');
+
+  if ('IntersectionObserver' in window && images.length > 0) {
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.classList.remove('lazy');
+            imageObserver.unobserve(img);
+          }
+        }
+      });
     });
-    document.body.appendChild(progressBar);
+
+    images.forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+}
+
+// 반응 상태 복원
+function restoreReactionStates() {
+  const postId = getPostIdFromUrl();
+  if (postId && isLoggedIn()) {
+    // 실제 구현에서는 서버 API 호출로 사용자의 반응 상태 복원
+    // fetch(`/api/posts/${postId}/reactions`)
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     if (data.liked) toggleLikeUI(true);
+    //     if (data.bookmarked) toggleBookmarkUI(true);
+    //   });
+  }
+}
+
+// 페이지 로드 애니메이션
+function animatePageLoad() {
+  const postDetail = document.querySelector('.post-detail');
+  const commentsSection = document.querySelector('.comments-section');
+
+  if (postDetail) {
+    postDetail.style.opacity = '0';
+    postDetail.style.transform = 'translateY(20px)';
+
+    setTimeout(() => {
+      postDetail.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      postDetail.style.opacity = '1';
+      postDetail.style.transform = 'translateY(0)';
+    }, 100);
   }
 
-  progressBar.style.width = `${progress * 100}%`;
+  if (commentsSection) {
+    commentsSection.style.opacity = '0';
+    commentsSection.style.transform = 'translateY(20px)';
+
+    setTimeout(() => {
+      commentsSection.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      commentsSection.style.opacity = '1';
+      commentsSection.style.transform = 'translateY(0)';
+    }, 300);
+  }
 }
 
 // 좋아요 토글
@@ -246,37 +267,41 @@ function toggleLike(postId) {
   if (!likeBtn) return;
 
   const icon = likeBtn.querySelector('.reaction-icon');
-  const countSpan = likeBtn.querySelector('.reaction-count');
-  const currentCount = parseInt(countSpan.textContent) || 0;
 
   // UI 즉시 업데이트
   if (isLiked) {
     icon.textContent = '🤍';
-    countSpan.textContent = Math.max(0, currentCount - 1);
     likeBtn.classList.remove('active');
     isLiked = false;
     showNotification('좋아요를 취소했습니다.', 'info');
   } else {
     icon.textContent = '❤️';
-    countSpan.textContent = currentCount + 1;
     likeBtn.classList.add('active');
     isLiked = true;
     showNotification('좋아요를 눌렀습니다!', 'success');
   }
 
-  // 서버에 요청 (실제 구현에서)
-  // fetch(`/api/posts/${postId}/like`, { method: 'POST' })
-  //     .then(response => response.json())
-  //     .then(data => {
-  //         if (!data.success) {
-  //             // 실패 시 원래 상태로 복원
-  //             revertLikeState();
-  //         }
-  //     })
-  //     .catch(error => {
-  //         revertLikeState();
-  //         showNotification('네트워크 오류가 발생했습니다.', 'error');
-  //     });
+  // 실제 구현에서 서버에 요청
+  /*
+  fetch(`/api/posts/${postId}/like`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (!data.success) {
+      // 실패 시 원래 상태로 복원
+      toggleLike(postId);
+      showNotification('좋아요 처리에 실패했습니다.', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('네트워크 오류가 발생했습니다.', 'error');
+  });
+  */
 }
 
 // 북마크 토글
@@ -380,9 +405,17 @@ function deletePost(postId) {
   showNotification('게시글을 삭제하는 중...', 'info');
 
   // 실제 삭제 폼 제출
-  const deleteForm = document.querySelector(`form[action*="${postId}/delete"]`);
+  const deleteForm = document.querySelector('#deleteForm');
   if (deleteForm) {
     deleteForm.submit();
+  } else {
+    // 폼이 없다면 직접 POST 요청
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/posts/${postId}/delete`;
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
   }
 }
 
@@ -418,108 +451,83 @@ function submitComment(event) {
   submitBtn.disabled = true;
   submitBtn.textContent = '작성 중...';
 
-  // 실제 구현에서는 서버로 댓글 전송
+  // 실제 구현에서는 서버에 댓글 전송
   setTimeout(() => {
     showNotification('댓글이 작성되었습니다!', 'success');
     resetCommentForm();
 
-    // 댓글 목록 새로고침 (실제로는 서버에서 새 댓글 데이터를 받아와 추가)
-    addNewCommentToList({
-      content: content,
-      isSecret: isSecret,
-      author: getCurrentUser().nickname,
-      createdAt: new Date()
-    });
-
-    // 버튼 복원
+    // 제출 버튼 복원
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
+
+    // 댓글 개수 업데이트
+    updateCommentCount();
   }, 1000);
 }
 
-// 댓글 폼 리셋
+// 댓글 폼 초기화
 function resetCommentForm() {
-  const form = document.querySelector('.comment-form');
-  if (form) {
-    const textarea = form.querySelector('.comment-textarea');
-    const checkbox = form.querySelector('input[name="isSecret"]');
+  const textarea = document.querySelector('.comment-textarea');
+  const isSecretCheckbox = document.querySelector('input[name="isSecret"]');
+  const charCount = document.querySelector('.char-count');
 
-    if (textarea) textarea.value = '';
-    if (checkbox) checkbox.checked = false;
+  if (textarea) {
+    textarea.value = '';
+  }
+  if (isSecretCheckbox) {
+    isSecretCheckbox.checked = false;
+  }
+  if (charCount) {
+    charCount.textContent = '0/500';
+    charCount.style.color = '#86868b';
+  }
 
-    updateCommentCharCount();
+  commentCharCount = 0;
+}
+
+// 댓글 개수 업데이트
+function updateCommentCount() {
+  const commentCountElement = document.querySelector('.comment-count');
+  const statNumberElement = document.querySelector('.stat-item .stat-number');
+
+  if (commentCountElement) {
+    let currentCount = parseInt(commentCountElement.textContent) || 0;
+    commentCountElement.textContent = currentCount + 1;
+  }
+
+  if (statNumberElement && statNumberElement.parentElement.querySelector('.stat-icon')?.textContent === '💬') {
+    let currentCount = parseInt(statNumberElement.textContent) || 0;
+    statNumberElement.textContent = currentCount + 1;
   }
 }
 
-// 새 댓글을 목록에 추가
-function addNewCommentToList(commentData) {
-  const commentsList = document.querySelector('.comments-list');
-  const emptyComments = document.querySelector('.empty-comments');
+// 날짜 포맷팅
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = now - date;
 
-  if (emptyComments) {
-    emptyComments.style.display = 'none';
+  // 1분 미만
+  if (diff < 60000) {
+    return '방금 전';
   }
-
-  // 새 댓글 HTML 생성 (실제로는 서버에서 렌더링된 HTML을 받아올 것)
-  const newCommentHtml = createCommentHTML(commentData);
-
-  if (commentsList) {
-    commentsList.insertAdjacentHTML('afterbegin', newCommentHtml);
-
-    // 댓글 수 업데이트
-    const commentCount = document.querySelector('.comment-count');
-    if (commentCount) {
-      const currentCount = parseInt(commentCount.textContent) || 0;
-      commentCount.textContent = currentCount + 1;
-    }
+  // 1시간 미만
+  if (diff < 3600000) {
+    return `${Math.floor(diff / 60000)}분 전`;
   }
-}
-
-// 댓글 HTML 생성
-function createCommentHTML(commentData) {
-  const timeAgo = '방금 전';
-  return `
-        <div class="comment-item new-comment">
-            <div class="comment-header">
-                <div class="comment-author">
-                    <div class="author-avatar">
-                        <span class="avatar-text">${commentData.author.substring(0,1).toUpperCase()}</span>
-                    </div>
-                    <div class="author-info">
-                        <span class="author-name">${commentData.author}</span>
-                        <time class="comment-date">${timeAgo}</time>
-                    </div>
-                </div>
-            </div>
-            <div class="comment-content">
-                <p>${commentData.content.replace(/\n/g, '<br>')}</p>
-                ${commentData.isSecret ? '<span class="secret-badge">🔒 비밀댓글</span>' : ''}
-            </div>
-        </div>
-    `;
-}
-
-// 댓글 정렬
-function sortComments(sortType) {
-  showNotification(`${getSortName(sortType)}으로 정렬 중...`, 'info');
-
-  // 실제로는 서버에서 정렬된 댓글을 다시 가져올 것
-  setTimeout(() => {
-    showNotification('댓글이 정렬되었습니다.', 'success');
-  }, 500);
-}
-
-// 정렬 이름 반환
-function getSortName(sortType) {
-  switch (sortType) {
-    case 'latest': return '최신순';
-    case 'oldest': return '오래된순';
-    case 'likes': return '추천순';
-    default: return '최신순';
+  // 24시간 미만
+  if (diff < 86400000) {
+    return `${Math.floor(diff / 3600000)}시간 전`;
   }
+  // 그 외
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 }
 
-// 스크롤 기능들
+// 맨 위로 스크롤
 function scrollToTop() {
   window.scrollTo({
     top: 0,
@@ -527,6 +535,7 @@ function scrollToTop() {
   });
 }
 
+// 댓글로 스크롤
 function scrollToComments() {
   const commentsSection = document.querySelector('.comments-section');
   if (commentsSection) {
@@ -534,188 +543,28 @@ function scrollToComments() {
       behavior: 'smooth',
       block: 'start'
     });
-
-    // 댓글 입력 필드에 포커스
-    setTimeout(() => {
-      const textarea = document.querySelector('.comment-textarea');
-      if (textarea) {
-        textarea.focus();
-      }
-    }, 500);
   }
 }
 
-// 유틸리티 함수들
-function getPostIdFromUrl() {
-  const pathParts = window.location.pathname.split('/');
-  return pathParts[pathParts.length - 1];
-}
-
-function isLoggedIn() {
-  return document.querySelector('.nav-user-info') !== null;
-}
-
-function getCurrentUser() {
-  const userNameElement = document.querySelector('.user-name');
-  return {
-    nickname: userNameElement ? userNameElement.textContent : 'Anonymous'
-  };
-}
-
-function restoreReactionStates() {
-  // 실제로는 서버에서 사용자의 반응 상태를 가져올 것
-  const likeBtn = document.querySelector('.like-btn');
-  const bookmarkBtn = document.querySelector('.bookmark-btn');
-
-  // 임시로 로컬 스토리지에서 상태 복원 (실제로는 서버 API 호출)
-  const postId = getPostIdFromUrl();
-  // isLiked = localStorage.getItem(`liked_${postId}`) === 'true';
-  // isBookmarked = localStorage.getItem(`bookmarked_${postId}`) === 'true';
-
-  if (isLiked && likeBtn) {
-    likeBtn.classList.add('active');
-    likeBtn.querySelector('.reaction-icon').textContent = '❤️';
-  }
-
-  if (isBookmarked && bookmarkBtn) {
-    bookmarkBtn.classList.add('active');
-    bookmarkBtn.querySelector('.reaction-icon').textContent = '📗';
-  }
-}
-
-// 추가 기능들
-function highlightCodeBlocks() {
-  const codeBlocks = document.querySelectorAll('pre code');
-  codeBlocks.forEach(block => {
-    // 코드 하이라이팅 라이브러리 적용 가능
-    block.classList.add('hljs');
-  });
-}
-
-function setupExternalLinks() {
-  const contentLinks = document.querySelectorAll('.content-body a[href^="http"]');
-  contentLinks.forEach(link => {
-    if (!link.href.includes(window.location.hostname)) {
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.innerHTML += ' 🔗';
-    }
-  });
-}
-
-function setupLazyLoading() {
-  const images = document.querySelectorAll('.content-body img');
-
-  if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          if (img.dataset.src) {
-            img.src = img.dataset.src;
-            img.classList.remove('lazy');
-            observer.unobserve(img);
-          }
-        }
-      });
-    });
-
-    images.forEach(img => {
-      if (img.dataset.src) {
-        imageObserver.observe(img);
-      }
-    });
-  }
-}
-
-function calculateReadingTime() {
-  const content = document.querySelector('.content-body');
-  if (content) {
-    const text = content.textContent || content.innerText || '';
-    const wordsPerMinute = 200; // 평균 읽기 속도
-    const words = text.trim().split(/\s+/).length;
-    const readingTime = Math.ceil(words / wordsPerMinute);
-
-    // 읽기 시간 표시 요소가 있다면 업데이트
-    const readingTimeElement = document.querySelector('.reading-time');
-    if (readingTimeElement) {
-      readingTimeElement.textContent = `약 ${readingTime}분 소요`;
-    }
-  }
-}
-
-function generateTableOfContents() {
-  const headings = document.querySelectorAll('.content-body h1, .content-body h2, .content-body h3');
-
-  if (headings.length >= 3) {
-    // 목차 생성 로직 (필요시 구현)
-    console.log('목차 생성 가능:', headings.length, '개의 제목');
-  }
-}
-
-// 알림 표시 함수 (post-list.js와 동일)
+// 알림 표시
 function showNotification(message, type = 'info') {
+  // 기존 알림 제거
   const existingNotification = document.querySelector('.notification');
   if (existingNotification) {
     existingNotification.remove();
   }
 
+  // 새 알림 생성
   const notification = document.createElement('div');
   notification.className = `notification notification-${type}`;
-  notification.innerHTML = `
-        <div class="notification-content">
-            <span class="notification-icon">${getNotificationIcon(type)}</span>
-            <span class="notification-message">${message}</span>
-        </div>
-    `;
-
-  Object.assign(notification.style, {
-    position: 'fixed',
-    top: '80px',
-    right: '20px',
-    padding: '12px 20px',
-    background: getNotificationColor(type),
-    color: 'white',
-    borderRadius: '8px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-    zIndex: '10000',
-    transform: 'translateX(100%)',
-    transition: 'transform 0.3s ease',
-    backdropFilter: 'blur(8px)'
-  });
+  notification.textContent = message;
 
   document.body.appendChild(notification);
 
+  // 3초 후 자동 제거
   setTimeout(() => {
-    notification.style.transform = 'translateX(0)';
-  }, 100);
-
-  setTimeout(() => {
-    notification.style.transform = 'translateX(100%)';
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 300);
+    if (notification.parentNode) {
+      notification.remove();
+    }
   }, 3000);
-}
-
-function getNotificationIcon(type) {
-  switch (type) {
-    case 'success': return '✅';
-    case 'error': return '❌';
-    case 'warning': return '⚠️';
-    case 'info': return 'ℹ️';
-    default: return 'ℹ️';
-  }
-}
-
-function getNotificationColor(type) {
-  switch (type) {
-    case 'success': return 'rgba(34, 197, 94, 0.9)';
-    case 'error': return 'rgba(239, 68, 68, 0.9)';
-    case 'warning': return 'rgba(245, 158, 11, 0.9)';
-    case 'info': return 'rgba(59, 130, 246, 0.9)';
-    default: return 'rgba(59, 130, 246, 0.9)';
-  }
 }

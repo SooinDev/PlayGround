@@ -23,7 +23,7 @@
       <c:if test="${not empty sessionScope.loginMember}">
         <div class="nav-user-info">
           <div class="user-avatar">
-            <span class="avatar-text">${sessionScope.loginMember.nickname.substring(0,1).toUpperCase()}</span>
+            <span class="avatar-text">${fn:substring(sessionScope.loginMember.nickname, 0, 1)}</span>
           </div>
           <div class="user-details">
             <span class="user-name">${sessionScope.loginMember.nickname}</span>
@@ -67,12 +67,19 @@
         <div class="post-meta-section">
           <div class="author-section">
             <div class="author-avatar">
-              <span class="avatar-text">${post.writerNickname.substring(0,1).toUpperCase()}</span>
+              <span class="avatar-text">${fn:substring(post.writerNickname, 0, 1)}</span>
             </div>
             <div class="author-info">
               <div class="author-name">${post.writerNickname}</div>
               <time class="post-date">
-                ${post.postCreatedAt.toString().replace('T', ' ').substring(0, 16)}
+                <c:choose>
+                  <c:when test="${not empty post.postCreatedAt}">
+                    ${post.postCreatedAt.toString().replace('T', ' ').substring(0, 16)}
+                  </c:when>
+                  <c:otherwise>
+                    ${fn:substring(post.postCreatedAt, 0, 16)}
+                  </c:otherwise>
+                </c:choose>
               </time>
             </div>
           </div>
@@ -94,12 +101,10 @@
                 <span class="btn-icon">✏️</span>
                 수정
               </a>
-              <form method="post" action="<c:url value='/posts/${post.postId}/delete'/>" style="display: inline;">
-                <button type="button" class="action-btn delete-btn" onclick="deletePost(${post.postId})">
-                  <span class="btn-icon">🗑️</span>
-                  삭제
-                </button>
-              </form>
+              <button type="button" class="action-btn delete-btn" onclick="deletePost(${post.postId})">
+                <span class="btn-icon">🗑️</span>
+                삭제
+              </button>
             </div>
           </c:if>
         </div>
@@ -108,25 +113,28 @@
       <!-- 게시글 본문 -->
       <div class="post-body">
         <div class="content-body">
-          ${fn:replace(post.content, newLineChar, '<br/>')}
+          <%-- 1. JSP 내에서 사용할 수 있도록 줄바꿈 문자(\n)를 변수로 만듭니다. --%>
+          <c:set var="newLineChar" value="<%= \"\\n\" %>" />
+
+          <%-- 2. fn:replace를 사용해 변수(newLineChar)에 담긴 줄바꿈 문자를 <br> 태그로 바꿉니다. --%>
+          ${fn:replace(post.content, newLineChar, '<br>')}
         </div>
       </div>
 
-      <!-- 게시글 푸터 -->
+      <!-- 게시글 푸터 (반응 버튼) -->
       <footer class="post-footer">
         <div class="post-reactions">
           <button class="reaction-btn like-btn" onclick="toggleLike(${post.postId})">
-            <span class="reaction-icon">❤️</span>
-            <span class="reaction-text">좋아요</span>
-            <span class="reaction-count">0</span>
+            <span class="reaction-icon">🤍</span>
+            <span>좋아요</span>
           </button>
           <button class="reaction-btn bookmark-btn" onclick="toggleBookmark(${post.postId})">
             <span class="reaction-icon">📖</span>
-            <span class="reaction-text">북마크</span>
+            <span>북마크</span>
           </button>
           <button class="reaction-btn share-btn" onclick="sharePost(${post.postId})">
-            <span class="reaction-icon">🔗</span>
-            <span class="reaction-text">공유</span>
+            <span class="reaction-icon">📤</span>
+            <span>공유</span>
           </button>
         </div>
       </footer>
@@ -134,31 +142,27 @@
 
     <!-- 댓글 섹션 -->
     <section class="comments-section">
-      <div class="comments-header">
-        <h3 class="comments-title">댓글 <span class="comment-count">0</span></h3>
-        <div class="comment-sort">
-          <select class="sort-select">
-            <option value="latest">최신순</option>
-            <option value="oldest">오래된순</option>
-            <option value="likes">추천순</option>
-          </select>
-        </div>
-      </div>
+      <header class="comments-header">
+        <h2 class="comments-title">댓글</h2>
+        <span class="comment-count">0</span>
+      </header>
 
-      <!-- 댓글 작성 폼 -->
+      <!-- 댓글 작성 폼 (로그인 시에만 표시) -->
       <c:if test="${not empty sessionScope.loginMember}">
         <div class="comment-form-container">
           <form class="comment-form" onsubmit="submitComment(event)">
-            <input type="hidden" name="postId" value="${post.postId}">
             <div class="comment-input-section">
-              <div class="commenter-info">
-                <div class="commenter-avatar">
-                  <span class="avatar-text">${sessionScope.loginMember.nickname.substring(0,1).toUpperCase()}</span>
-                </div>
-                <span class="commenter-name">${sessionScope.loginMember.nickname}</span>
+              <div class="commenter-avatar">
+                <span class="avatar-text">${fn:substring(sessionScope.loginMember.nickname, 0, 1)}</span>
               </div>
-              <textarea class="comment-textarea" name="content" placeholder="댓글을 입력하세요..."
-                        maxlength="500" rows="3" required></textarea>
+              <div class="comment-input-wrapper">
+                <textarea
+                        class="comment-textarea"
+                        placeholder="댓글을 입력하세요..."
+                        maxlength="500"
+                        rows="3"
+                        required></textarea>
+              </div>
             </div>
             <div class="comment-actions">
               <div class="comment-options">
@@ -188,20 +192,20 @@
     </section>
 
     <!-- 하단 네비게이션 -->
-    <div class="bottom-navigation">
+    <nav class="bottom-navigation">
       <c:if test="${not empty prevPost}">
         <a href="<c:url value='/posts/${prevPost.postId}'/>" class="nav-post prev-post">
-          <div class="nav-direction">← 이전글</div>
+          <div class="nav-direction">이전글</div>
           <div class="nav-title">${prevPost.title}</div>
         </a>
       </c:if>
       <c:if test="${not empty nextPost}">
         <a href="<c:url value='/posts/${nextPost.postId}'/>" class="nav-post next-post">
-          <div class="nav-direction">다음글 →</div>
+          <div class="nav-direction">다음글</div>
           <div class="nav-title">${nextPost.title}</div>
         </a>
       </c:if>
-    </div>
+    </nav>
   </div>
 </main>
 
@@ -214,6 +218,11 @@
     <span class="float-icon">💬</span>
   </button>
 </div>
+
+<!-- 숨겨진 삭제 폼 -->
+<form id="deleteForm" method="post" action="<c:url value='/posts/${post.postId}/delete'/>" style="display: none;">
+  <input type="hidden" name="_method" value="DELETE">
+</form>
 
 <script src="<c:url value='/resources/js/post/post-detail.js'/>"></script>
 </body>
