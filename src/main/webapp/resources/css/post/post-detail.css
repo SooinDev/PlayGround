@@ -1013,7 +1013,7 @@ body::before {
 }
 
 /* 고대비 모드 지원 */
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .post-detail,
   .comments-section {
     border: 2px solid #007aff;
