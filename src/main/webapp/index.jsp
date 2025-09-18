@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PlayGround - 당신의 디지털 공간</title>
   <link rel="stylesheet" href="<c:url value='/resources/css/index.css'/>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
 <!-- 로그인 시 상단 네비게이션 바 -->
@@ -69,163 +71,238 @@
         다시 오신 것을 환영합니다! 새로운 기능들을 둘러보시고
         PlayGround에서 더 많은 것들을 경험해보세요.
       </p>
-      <div class="cta-buttons">
-        <a href="<c:url value='/posts'/>" class="btn btn-primary">
-          <span class="btn-icon">📝</span>
-          게시판 바로가기
-        </a>
-        <a href="<c:url value='/dashboard'/>" class="btn btn-secondary">
-          <span class="btn-icon">📊</span>
-          대시보드
-        </a>
-        <a href="<c:url value='/member/mypage'/>" class="btn btn-outline">
-          <span class="btn-icon">⚙️</span>
-          내 프로필
-        </a>
-      </div>
-
-      <!-- 로그인 사용자를 위한 빠른 액션 카드 -->
-      <div class="quick-actions">
-        <div class="action-card" data-href="<c:url value='/posts'/>">
-          <div class="action-icon">📝</div>
-          <h3>게시판</h3>
-          <p>다른 회원들과 소통하고 정보를 공유하세요</p>
-          <a href="<c:url value='/posts'/>" class="action-link">게시글 보기 →</a>
-        </div>
-        <div class="action-card" data-href="<c:url value='/dashboard'/>">
-          <div class="action-icon">📈</div>
-          <h3>대시보드</h3>
-          <p>나의 활동 내역을 확인하세요</p>
-          <a href="<c:url value='/dashboard'/>" class="action-link">보러가기 →</a>
-        </div>
-        <div class="action-card" data-href="<c:url value='/member/mypage'/>">
-          <div class="action-icon">⚙️</div>
-          <h3>계정 설정</h3>
-          <p>프로필과 설정을 관리하세요</p>
-          <a href="<c:url value='/member/mypage'/>" class="action-link">설정하기 →</a>
-        </div>
-      </div>
     </c:when>
     <c:otherwise>
-      <h2 class="tagline">당신의 디지털 공간</h2>
+      <h2 class="tagline">당신의 새로운 디지털 경험</h2>
       <p class="subtitle">
-        혁신적인 회원 관리 시스템으로 더 나은 커뮤니티를 만들어보세요.
-        간편하고 안전한 가입 절차를 통해 새로운 디지털 경험을 시작하세요.
+        PlayGround는 창의적인 아이디어와 혁신적인 기능들이 만나는 곳입니다.
+        지금 시작하여 무한한 가능성을 경험해보세요.
       </p>
-      <div class="cta-buttons">
-        <a href="<c:url value='/member/register'/>" class="btn btn-primary">
-          <span class="btn-icon">🚀</span>
-          회원가입
-        </a>
-        <a href="<c:url value='/member/login'/>" class="btn btn-secondary">
-          <span class="btn-icon">🔑</span>
-          로그인
-        </a>
-        <a href="<c:url value='/posts'/>" class="btn btn-outline">
-          <span class="btn-icon">📝</span>
-          게시판 둘러보기
-        </a>
-      </div>
-
-      <!-- 로그인하지 않은 사용자를 위한 기능 소개 카드 -->
-      <div class="quick-actions">
-        <div class="action-card" data-href="<c:url value='/posts'/>">
-          <div class="action-icon">📝</div>
-          <h3>게시판</h3>
-          <p>다양한 주제의 게시글을 둘러보세요</p>
-          <a href="<c:url value='/posts'/>" class="action-link">게시글 보기 →</a>
-        </div>
-        <div class="action-card" data-href="<c:url value='/member/register'/>">
-          <div class="action-icon">🚀</div>
-          <h3>회원가입</h3>
-          <p>PlayGround의 모든 기능을 이용하세요</p>
-          <a href="<c:url value='/member/register'/>" class="action-link">가입하기 →</a>
-        </div>
-        <div class="action-card" data-href="#features">
-          <div class="action-icon">🌟</div>
-          <h3>기능 소개</h3>
-          <p>PlayGround의 특별한 기능들을 확인하세요</p>
-          <a href="#features" class="action-link">둘러보기 →</a>
-        </div>
-      </div>
     </c:otherwise>
   </c:choose>
+
+  <div class="cta-buttons">
+    <c:choose>
+      <c:when test="${not empty sessionScope.loginMember}">
+        <a href="<c:url value='/posts'/>" class="btn btn-primary posts-highlight">
+          <span class="btn-text">게시판 보기</span>
+          <span class="btn-icon">📝</span>
+        </a>
+        <a href="<c:url value='/posts/new'/>" class="btn btn-secondary">
+          <span class="btn-text">글쓰기</span>
+          <span class="btn-icon">✍️</span>
+        </a>
+        <a href="<c:url value='/member/mypage'/>" class="btn btn-tertiary">
+          <span class="btn-text">마이페이지</span>
+          <span class="btn-icon">⚙️</span>
+        </a>
+      </c:when>
+      <c:otherwise>
+        <a href="<c:url value='/member/register'/>" class="btn btn-primary">
+          <span class="btn-text">지금 시작하기</span>
+          <span class="btn-icon">🚀</span>
+        </a>
+        <a href="<c:url value='/member/login'/>" class="btn btn-secondary">
+          <span class="btn-text">로그인</span>
+          <span class="btn-icon">🔐</span>
+        </a>
+        <a href="<c:url value='/posts'/>" class="btn btn-tertiary">
+          <span class="btn-text">둘러보기</span>
+          <span class="btn-icon">👀</span>
+        </a>
+      </c:otherwise>
+    </c:choose>
+  </div>
+
+  <!-- 퀵 액션 (로그인 시에만 표시) -->
+  <c:if test="${not empty sessionScope.loginMember}">
+    <div class="quick-actions">
+      <div class="action-card primary-action" onclick="location.href='<c:url value='/posts'/>'">
+        <div class="action-icon">📝</div>
+        <div class="action-content">
+          <h3 class="action-title">게시판 둘러보기</h3>
+          <p class="action-description">다양한 주제의 글들을 확인하고 소통해보세요</p>
+          <span class="action-link">바로가기 →</span>
+        </div>
+      </div>
+
+      <div class="action-card" onclick="location.href='<c:url value='/posts/new'/>'">
+        <div class="action-icon">✍️</div>
+        <div class="action-content">
+          <h3 class="action-title">새 글 작성</h3>
+          <p class="action-description">당신의 이야기를 다른 사람들과 공유해보세요</p>
+          <span class="action-link">작성하기 →</span>
+        </div>
+      </div>
+
+      <div class="action-card" onclick="location.href='<c:url value='/member/mypage'/>'">
+        <div class="action-icon">⚙️</div>
+        <div class="action-content">
+          <h3 class="action-title">프로필 관리</h3>
+          <p class="action-description">개인 정보와 계정 설정을 관리해보세요</p>
+          <span class="action-link">설정하기 →</span>
+        </div>
+      </div>
+    </div>
+  </c:if>
 </div>
 
-<div class="features" id="features">
+<!-- Features Section -->
+<section class="features" id="features">
   <div class="container">
-    <h2 class="section-title">왜 PlayGround인가?</h2>
-    <p class="section-subtitle">
-      사용자 중심의 설계와 최신 보안 기술로 안전하고 편리한 서비스를 제공합니다.
-    </p>
+    <h2 class="section-title">PlayGround의 특별함</h2>
+    <p class="section-subtitle">혁신적인 기능들로 더 나은 디지털 경험을 만들어보세요</p>
 
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">🔒</div>
-        <h3 class="feature-title">강력한 보안</h3>
-        <p class="feature-description">
-          최신 암호화 기술과 다중 보안 계층으로 개인정보를 안전하게 보호합니다.
-        </p>
+        <div class="feature-icon">💬</div>
+        <h3 class="feature-title">실시간 소통</h3>
+        <p class="feature-description">언제든지 다른 사용자들과 자유롭게 소통하고 아이디어를 공유할 수 있습니다.</p>
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3 class="feature-title">빠른 성능</h3>
-        <p class="feature-description">
-          최적화된 시스템 아키텍처로 빠르고 안정적인 서비스를 경험하세요.
-        </p>
+        <div class="feature-icon">🔒</div>
+        <h3 class="feature-title">안전한 환경</h3>
+        <p class="feature-description">강화된 보안 시스템으로 안전하고 신뢰할 수 있는 플랫폼을 제공합니다.</p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">🎨</div>
-        <h3 class="feature-title">직관적 디자인</h3>
-        <p class="feature-description">
-          사용자 친화적인 인터페이스로 누구나 쉽게 이용할 수 있습니다.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">📝</div>
-        <h3 class="feature-title">활발한 커뮤니티</h3>
-        <p class="feature-description">
-          다양한 주제의 게시글을 통해 다른 사용자들과 소통하고 정보를 공유하세요.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h3 class="feature-title">개인화된 대시보드</h3>
-        <p class="feature-description">
-          나만의 활동 현황과 통계를 한눈에 확인할 수 있는 맞춤형 대시보드를 제공합니다.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">🌍</div>
-        <h3 class="feature-title">언제 어디서나</h3>
-        <p class="feature-description">
-          모바일과 데스크톱 모든 환경에서 최적화된 반응형 디자인을 경험하세요.
-        </p>
+        <h3 class="feature-title">창의적 도구</h3>
+        <p class="feature-description">다양한 창작 도구와 기능들로 당신의 아이디어를 현실로 만들어보세요.</p>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="footer">
+<!-- Footer -->
+<footer class="footer">
   <div class="container">
-    <p>&copy; 2025 PlayGround. 모든 권리 보유.</p>
-    <p style="margin-top: 8px; font-size: 15px;">
-      <a href="<c:url value='/posts'/>" style="color: #007aff; text-decoration: none;">게시판</a> |
-      개인정보보호정책 | 이용약관 | 고객지원
-    </p>
+    <p>&copy; 2024 PlayGround. All rights reserved.</p>
+    <p>혁신적인 디지털 경험의 시작</p>
   </div>
-</div>
+</footer>
 
-<div class="nav-dots">
-  <div class="nav-dot active" data-section="hero"></div>
-  <div class="nav-dot" data-section="features"></div>
-</div>
+<!-- 네비게이션 도트 -->
+<nav class="nav-dots">
+  <a href="#hero" class="nav-dot active" data-section="hero"></a>
+  <a href="#features" class="nav-dot" data-section="features"></a>
+</nav>
 
 <script src="<c:url value='/resources/js/index.js'/>"></script>
+<script>
+  // 환영 메시지 닫기
+  function closeWelcomeMessage() {
+    const message = document.getElementById('welcomeMessage');
+    if (message) {
+      message.style.transform = 'translateX(100%)';
+      setTimeout(() => message.remove(), 300);
+    }
+  }
+
+  // 게시판 로딩 상태 관리
+  function handlePostsNavigation(element) {
+    // 로딩 상태 추가
+    element.classList.add('loading');
+    element.style.pointerEvents = 'none';
+
+    // 원래 텍스트 저장
+    const originalText = element.querySelector('.btn-text').textContent;
+    element.querySelector('.btn-text').textContent = '로딩 중...';
+
+    // 페이지 이동
+    setTimeout(() => {
+      window.location.href = element.href || element.onclick.toString().match(/location\.href='([^']+)'/)[1];
+    }, 100);
+  }
+
+  // 모든 게시판 관련 링크에 로딩 처리 적용
+  document.addEventListener('DOMContentLoaded', function() {
+    // CTA 버튼들
+    const postsLinks = document.querySelectorAll('a[href*="/posts"], .action-card[onclick*="posts"]');
+
+    postsLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        handlePostsNavigation(this);
+      });
+    });
+
+    // 네비게이션 버튼들
+    const navPostsLinks = document.querySelectorAll('.nav-btn[href*="/posts"]');
+    navPostsLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        handlePostsNavigation(this);
+      });
+    });
+  });
+
+  // 뒤로가기 시 로딩 상태 초기화
+  window.addEventListener('pageshow', function(event) {
+    // bfcache에서 페이지가 복원될 때
+    if (event.persisted) {
+      // 모든 로딩 상태 제거
+      const loadingElements = document.querySelectorAll('.loading');
+      loadingElements.forEach(element => {
+        element.classList.remove('loading');
+        element.style.pointerEvents = 'auto';
+
+        // 텍스트 복원
+        const btnText = element.querySelector('.btn-text');
+        if (btnText) {
+          if (btnText.textContent === '로딩 중...') {
+            if (element.href && element.href.includes('/posts')) {
+              btnText.textContent = '게시판 보기';
+            } else if (element.classList.contains('nav-btn-posts')) {
+              btnText.textContent = '게시판';
+            }
+          }
+        }
+      });
+    }
+  });
+
+  // 페이지 언로드 시 상태 초기화
+  window.addEventListener('beforeunload', function() {
+    const loadingElements = document.querySelectorAll('.loading');
+    loadingElements.forEach(element => {
+      element.classList.remove('loading');
+      element.style.pointerEvents = 'auto';
+    });
+  });
+
+  // 자동으로 환영 메시지 숨기기 (5초 후)
+  <c:if test="${not empty sessionScope.loginMember}">
+  setTimeout(() => {
+    const message = document.getElementById('welcomeMessage');
+    if (message) {
+      closeWelcomeMessage();
+    }
+  }, 5000);
+  </c:if>
+
+  // 네비게이션 도트 활성화
+  const sections = document.querySelectorAll('section, .hero-section');
+  const navDots = document.querySelectorAll('.nav-dot');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      if (scrollY >= sectionTop - 200) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navDots.forEach(dot => {
+      dot.classList.remove('active');
+      if (dot.getAttribute('data-section') === current) {
+        dot.classList.add('active');
+      }
+    });
+  });
+</script>
 </body>
 </html>
