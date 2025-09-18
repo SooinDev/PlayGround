@@ -32,7 +32,7 @@
         <div class="nav-buttons">
           <a href="<c:url value='/member/mypage'/>" class="nav-btn nav-btn-secondary">마이페이지</a>
           <a href="<c:url value='/posts/new'/>" class="nav-btn nav-btn-primary">
-            <span class="btn-icon">✏️</span>
+            <span class="btn-icon">✍️</span>
             글쓰기
           </a>
           <a href="<c:url value='/member/logout'/>" class="nav-btn nav-btn-outline">로그아웃</a>
@@ -63,7 +63,7 @@
         </button>
         <c:if test="${not empty sessionScope.loginMember}">
           <a href="<c:url value='/posts/new'/>" class="action-btn write-btn">
-            <span class="action-icon">✏️</span>
+            <span class="action-icon">✍️</span>
             글쓰기
           </a>
         </c:if>
@@ -110,61 +110,68 @@
     <div class="posts-container">
       <c:choose>
         <c:when test="${not empty postList}">
-          <div class="posts-grid">
+          <!-- 테이블 헤더 -->
+          <div class="posts-table-header">
+            <div>번호</div>
+            <div>제목</div>
+            <div>작성자</div>
+            <div>날짜</div>
+            <div>조회</div>
+          </div>
+
+          <!-- 게시글 리스트 -->
+          <div class="posts-list">
             <c:forEach items="${postList}" var="post" varStatus="status">
-              <article class="post-card" data-post-id="${post.postId}">
-                <div class="post-header">
-                  <div class="post-meta">
-                    <div class="post-author">
-                      <div class="author-avatar">
-                        <span class="avatar-text">${post.writerNickname.substring(0,1).toUpperCase()}</span>
-                      </div>
-                      <div class="author-info">
-                        <span class="author-name">${post.writerNickname}</span>
-                        <time class="post-date">
-                            ${post.postCreatedAt.toString().replace('T', ' ').substring(0, 16)}
-                        </time>
-                      </div>
-                    </div>
-                    <div class="post-actions">
-                      <button class="action-bookmark" onclick="toggleBookmark(${post.postId})" title="북마크">
-                        <span class="bookmark-icon">📖</span>
-                      </button>
-                    </div>
+              <div class="post-item" data-post-id="${post.postId}" onclick="viewPost(${post.postId})">
+                <!-- 번호 -->
+                <div class="post-number">
+                    ${totalPosts - ((currentPage - 1) * 10 + status.index)}
+                </div>
+
+                <!-- 메인 콘텐츠 (제목 + 메타 정보) -->
+                <div class="post-main-content">
+                  <a href="javascript:void(0)" class="post-title" onclick="viewPost(${post.postId})">
+                      ${post.title}
+                    <c:if test="${post.viewCount > 100}">
+                      <span style="color: #ff6b6b; font-size: 12px; margin-left: 4px;">🔥</span>
+                    </c:if>
+                  </a>
+                  <div class="post-meta-inline">
+                    <span class="post-category">일반</span>
+                    <c:if test="${fn:length(post.content) > 50}">
+                      <span style="color: #86868b; font-size: 11px;">
+                        ${fn:substring(post.content, 0, 50)}...
+                      </span>
+                    </c:if>
                   </div>
                 </div>
 
-                <div class="post-content" onclick="viewPost(${post.postId})">
-                  <h2 class="post-title">${post.title}</h2>
-                  <p class="post-excerpt">
-                    <c:choose>
-                      <c:when test="${fn:length(post.content) > 150}">
-                        ${fn:substring(post.content, 0, 150)}...
-                      </c:when>
-                      <c:otherwise>
-                        ${post.content}
-                      </c:otherwise>
-                    </c:choose>
-                  </p>
+                <!-- 작성자 -->
+                <div class="post-author">
+                  <div class="author-avatar">
+                    <span class="avatar-text">${post.writerNickname.substring(0,1).toUpperCase()}</span>
+                  </div>
+                  <span class="author-name">${post.writerNickname}</span>
                 </div>
 
-                <div class="post-footer">
-                  <div class="post-stats">
-                    <div class="stat-item">
-                      <span class="stat-icon">👁️</span>
-                      <span class="stat-number">${post.viewCount}</span>
-                    </div>
-                    <div class="stat-item">
-                      <span class="stat-icon">💬</span>
-                      <span class="stat-number">0</span>
-                    </div>
-                    <div class="stat-item">
-                      <span class="stat-icon">❤️</span>
-                      <span class="stat-number">0</span>
-                    </div>
-                  </div>
+                <!-- 날짜 -->
+                <div class="post-date">
+                  <c:choose>
+                    <c:when test="${post.postCreatedAt.toString().substring(0,10) == today}">
+                      ${post.postCreatedAt.toString().substring(11, 16)}
+                    </c:when>
+                    <c:otherwise>
+                      ${post.postCreatedAt.toString().substring(5, 10)}
+                    </c:otherwise>
+                  </c:choose>
                 </div>
-              </article>
+
+                <!-- 조회수 -->
+                <div class="post-views">
+                  <span class="view-icon">👁</span>
+                  <span>${post.viewCount}</span>
+                </div>
+              </div>
             </c:forEach>
           </div>
 
@@ -226,7 +233,7 @@
   </button>
   <c:if test="${not empty sessionScope.loginMember}">
     <a href="<c:url value='/posts/new'/>" class="float-btn write-post" title="글쓰기">
-      <span class="float-icon">✏️</span>
+      <span class="float-icon">✍️</span>
     </a>
   </c:if>
 </div>
